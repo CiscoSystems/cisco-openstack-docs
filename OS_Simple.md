@@ -11,24 +11,26 @@ You may need to add network information (unless you have DHCP enabled, which you
 
 Once the node is built log in (localadmin:ubuntu are the default)
 
-  git clone https://github.com/CiscoSystems/cisco-openstack-docs os-docs
-  cd os-docs/examples
-  rake modules:clone
+	git clone https://github.com/CiscoSystems/cisco-openstack-docs os-docs
+	cd os-docs/examples
+	rake modules:clone
 
 Then you need to set up your site:
 
-  cp os-docs/examples/site.pp /etc/puppet/manifests/
-  cp os-docs/examples/cobbler-node.pp /etc/puppet/manifests/
+	cp os-docs/examples/site.pp /etc/puppet/manifests/
+	cp os-docs/examples/cobbler-node.pp /etc/puppet/manifests/
 
 YOU MUST THEN EDIT THESE FILES.  They are fairly well documented, but please comment with questions.
 
-The puppet it:
+Then 'puppet apply' it:
 
-  puppet apply -v /etc/puppet/manifests/site.pp
+	puppet apply -v /etc/puppet/manifests/site.pp
 
-At this point you should be able to load up your cobbled nodes:
+I recommend a reboot at this point, as it seems that the puppetmaster doesn't restart correctly otherwise.
 
-  os-docs/examples/clean_node.sh {node_name}
+And now you should be able to load up your cobbled nodes:
+
+	os-docs/examples/clean_node.sh {node_name}
 
 
 
