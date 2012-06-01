@@ -14,7 +14,7 @@ file { 'id_rsa':
  name => '/root/.ssh/id_rsa',
  mode => 0600,
  require => File['ssh_root_path'],
- source => '/root/puppet-ssh/id_rsa',
+ source => 'puppet:///root/puppet-ssh/id_rsa',
 }
 
 file { 'id_rsa.pub':
@@ -22,7 +22,7 @@ file { 'id_rsa.pub':
  name => '/root/.ssh/id_rsa.pub',
  mode => 0600,
  require => File['ssh_root_path'],
- source => '/root/puppet-ssh/id_rsa.pub',
+ source => 'puppet:///root/puppet-ssh/id_rsa.pub',
 }
 
 
@@ -31,5 +31,5 @@ file { 'authorized_keys':
  name => '/root/.ssh/authorized_keys',
  mode => 0600,
  require => File['ssh_root_path'],
- source => '/root/puppet-ssh/authorized_keys'
+ source => 'puppet:///root/puppet-ssh/authorized_keys',
 }
