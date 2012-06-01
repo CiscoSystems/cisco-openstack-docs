@@ -1,6 +1,7 @@
 # modulepath: /etc/puppet/modules
 repos:
   repo_paths:
+    https://github.com/puppetlabs/puppetlabs-openstack: openstack
     # openstack git repos
     https://github.com/puppetlabs/puppetlabs-nova: nova
     https://github.com/puppetlabs/puppetlabs-glance: glance
