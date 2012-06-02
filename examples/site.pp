@@ -124,6 +124,7 @@ node /sdu-os-1/ inherits flat_dhcp {
     nova_service_password   => $nova_service_password,
     rabbit_password         => $rabbit_password,
     rabbit_user             => $rabbit_user,
+    export_resources        => false,
   }
 
 }
@@ -144,6 +145,7 @@ node /compute-[1-9]/ inherits flat_dhcp {
     sql_connection     => $sql_connection,
     vncproxy_host      => $controller_node_internal,
     verbose            => $verbose,
+    manage_volumes     => true,
  }
 
 }

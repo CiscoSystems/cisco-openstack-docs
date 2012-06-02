@@ -32,7 +32,7 @@ node /cobbler-node/ {
   dhcp_ip_low => '192.168.100.50',
   dhcp_ip_high => '192.168.100.59',
   domain_name => "sdu.lab",
-  proxy => "http://192.168.26.163:3142/",
+  proxy => "http://192.168.100.254:3142/",
   password_crypted => '$6$UfgWxrIv$k4KfzAEMqMg.fppmSOTd0usI4j6gfjs0962.JXsoJRWa5wMz8yQk4SfInn4.WZ3L/MCt5u.62tHDGB36EhiKF1',
  }
 
@@ -48,7 +48,7 @@ echo "server ${http_server} iburst" > /target/etc/ntp.conf ; \
 echo "auto eth1" >> /target/etc/network/interfaces ; \
 echo "iface eth1 inet loopback" >> /target/etc/network/interfaces
 ',
-  proxy => 'http://128.107.252.163:3142/',
+  proxy => 'http://192.168.100.254:3142/',
   password_crypted => '$6$5NP1.NbW$WOXi0W1eXf9GOc0uThT5pBNZHqDH9JNczVjt9nzFsH7IkJdkUpLeuvBU.Zs9x3P6LBGKQh6b0zuR8XSlmcuGn.',
   expert_disk => true,
   diskpart => ['/dev/sdc'],

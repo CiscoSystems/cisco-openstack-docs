@@ -1,5 +1,8 @@
 #!/bin/bash
-domain="sdu.lab"
+if [[ -n $2 ]]
+  then domain=$2
+  else domain="example.com"
+fi
 sudo cobbler system edit --name=$1 --netboot-enable=Y
 sudo cobbler system poweroff --name=$1
 sudo cobbler system poweron --name=$1

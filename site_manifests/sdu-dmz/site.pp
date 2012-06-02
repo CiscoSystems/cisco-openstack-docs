@@ -23,6 +23,7 @@ node /sdu-os-0/ inherits "cobbler-node" {
     run_master => true,
     puppetmaster_address => $::ipaddress_eth0,
     mysql_password => 'ubuntu',	
+    domain => 'sdu.lab',
   }
 }
 
@@ -50,6 +51,7 @@ node base {
   
   $fixed_range             = '10.0.0.0/16'
 
+  $multi_host		   = false
   $verbose                 = true
 
   # this is a dmz specific hack
@@ -116,7 +118,7 @@ node /sdu-os-1/ inherits flat_dhcp {
     internal_address        => $controller_node_internal,
     floating_range          => '192.168.100.64/28',
     fixed_range             => $fixed_range,
-    multi_host              => false,
+    multi_host              => $multi_host,
     network_manager         => 'nova.network.manager.FlatDHCPManager',
     verbose                 => $verbose,
     mysql_root_password     => $mysql_root_password,
@@ -130,6 +132,7 @@ node /sdu-os-1/ inherits flat_dhcp {
     nova_service_password   => $nova_service_password,
     rabbit_password         => $rabbit_password,
     rabbit_user             => $rabbit_user,
+    export_resources        => false,
   }
 
 #  class { 'role_swift_ringbuilder': }
@@ -153,35 +156,8 @@ node /sdu-os-[2-3]/ inherits flat_dhcp {
     sql_connection     => $sql_connection,
     vncproxy_host      => $controller_node_internal,
     verbose            => $verbose,
+    manage_volumes     => true,
  }
-
-}
-
-$swift_shared_secret='09e96d0623cb5623'
-$swift_local_net_ip = $ipaddress_eth0
-
-
-
-#import "swift_models"
-
-
-node /sdu-os-s-4/ {
-
-  $swift_zone = 1
-  include role_swift_storage
-
-}
-node /sdu-os-s-5/ {
-
-  $swift_zone = 2
-  include role_swift_storage
-
-}
-
-node /sdu-os-s-7/ {
-  
-  $swift_zone = 3
-  include role_swift_storage
 
 }
 
