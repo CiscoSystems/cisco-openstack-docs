@@ -48,7 +48,7 @@ namespace :modules do
     end
   end
 
-  desc 'see if any of the modules are not up-to-date'
+  desc 'see if any of the modules can be pulled'
   task 'pull' do
     repo_hash = YAML.load_file(File.join(File.dirname(__FILE__), repo_file))
     repos = (repo_hash['repos'] || {})
