@@ -43,7 +43,7 @@ node base {
   $sql_connection          = "mysql://nova:${nova_db_password}@${controller_node_internal}/nova"
   $admin_password          = 'admin_password'
   $admin_token             = 'admin_token'
-  $mysql_root_password     = 'sql_pass' 
+  $mysql_root_password     = 'ubuntu' 
 
   $nova_service_password   = 'nova_pass'
   $glance_service_password = 'glance_pass'
