@@ -1,7 +1,9 @@
 d-i mirror/country string manual
 d-i mirror/http/hostname string us.archive.ubuntu.com
 d-i mirror/http/directory string /ubuntu
-d-i mirror/http/proxy string http://128.107.252.163:3142/
+# d-i mirror/http/proxy string http://128.107.252.163:3142/
+# If you don't have a RAID controller, this likely needs to be /dev/sda,
+# and you will need to update the expert recipe as well.
 d-i partman-auto/disk string /dev/sdc
 d-i partman-auto/method string lvm
 d-i partman-auto/choose_recipe select nova-volumes
