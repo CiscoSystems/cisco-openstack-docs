@@ -21,7 +21,7 @@ VLAN 105 is unconnected
 "Public" addresses on VLAN100 are in the 192.168.100.0/24 range, and a static pool (nova pool) is carved out of that range as 192.168.100.64/28
 "Private" addresses are from the floating pool in the 10.0.0.0/16 range, but a network in the 10.0.0.0/24 range is actaully assigned to the openstack tenant.
 
-Building the environemnt
+Building the environment
 ------------------------
 
 1) Build an Ubuntu 12.04 system.
