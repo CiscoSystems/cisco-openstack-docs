@@ -5,6 +5,8 @@ The following items are the key components of a UCS C-series reference system.  
 
 In general, although the automated deployment solutions do not current drive a highly available management and systems infrastructure, the components are listed in appropriate quantities to support enterprise class availablility of the management and infrastructure components.
 
+![Cisco C Series Openstack Reference Model Image](https://github.com/CiscoSystems/cisco-openstack-docs/blob/master/Cisco_C_Reference.png "Cisco Openstack Reference Model")
+
 Physical Compute
 ----------------
 
