@@ -37,7 +37,11 @@ Once the node is built log in (localadmin:ubuntu are the default), and become ro
 
 	apt-get update && apt-get dist-upgrade -y
 
-After that complets, we can grab the code to automate the most of the rest of the build:
+If you didn't install via the preseed file method, you'll need a couple additional packages:
+
+	apt-get install rake puppet git
+
+After that completes, we can grab the code to automate the most of the rest of the build:
 
 	git clone https://github.com/CiscoSystems/cisco-openstack-docs os-docs
 	cd os-docs/examples
