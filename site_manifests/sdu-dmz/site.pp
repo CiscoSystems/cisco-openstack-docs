@@ -23,7 +23,6 @@ node /sdu-os-0/ inherits "cobbler-node" {
     run_master => true,
     puppetmaster_address => $::ipaddress_eth0,
     mysql_password => 'ubuntu',	
-    domain => 'sdu.lab',
   }
 }
 
