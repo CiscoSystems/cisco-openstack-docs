@@ -33,7 +33,7 @@ you can use the preseed file in the example directory to build the base os.  Sta
 
 If you can't get to the 128 address (i.e., you're outside of Cisco), host the preseed file on your own machine. You may need to add network information (unless you have DHCP enabled, which you may want to disable and give control over to cobbler).
 
-Once the node is built log in (localadmin:ubuntu are the default)
+Once the node is built log in (localadmin:ubuntu are the default), and become root (I usually do "sudo -H bash"), or preface all the following commands with "sudo".
 
 	git clone https://github.com/CiscoSystems/cisco-openstack-docs os-docs
 	cd os-docs/examples
