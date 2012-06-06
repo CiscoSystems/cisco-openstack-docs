@@ -39,7 +39,7 @@ Once the node is built log in (localadmin:ubuntu are the default), and become ro
 
 If you didn't install via the preseed file method, you'll need a couple additional packages:
 
-	apt-get install rake puppet git
+	apt-get install openssh-server lvm2 ntp puppet git rake
 
 After that completes, we can grab the code to automate the most of the rest of the build:
 
