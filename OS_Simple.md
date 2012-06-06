@@ -35,6 +35,10 @@ If you can't get to the 128 address (i.e., you're outside of Cisco), host the pr
 
 Once the node is built log in (localadmin:ubuntu are the default), and become root (I usually do "sudo -H bash"), or preface all the following commands with "sudo".
 
+	apt-get update && apt-get dist-upgrade -y
+
+After that complets, we can grab the code to automate the most of the rest of the build:
+
 	git clone https://github.com/CiscoSystems/cisco-openstack-docs os-docs
 	cd os-docs/examples
 	rake modules:clone
