@@ -27,11 +27,13 @@ Building the environment
 1) Build an Ubuntu 12.04 system.
 
 We still need a build node (though will plan to migrate to a RAMFS based system soon), and
-you can use the preseed file in the example directory to build the base os.  Start with the ISO boot (or USB boot), and at the initial installer screen, after you pick your language, hit F6 (or FN-F6 on a mac), and ESC, and add:
+you can use the preseed file in the example directory to build the base os.  Start with the ISO boot (or USB boot), and at the initial installer screen, after you pick your language, hit F6 (or FN-F6 on a mac), and ESC, and add (don't delete anything from the current boot string):
 
  priority=critical locale=en_US url=http://128.107.252.163/preseed
 
 If you can't get to the 128 address (i.e., you're outside of Cisco), host the preseed file on your own machine. You may need to add network information (unless you have DHCP enabled, which you may want to disable and give control over to cobbler).
+
+If you don't want to go the pre-seed route, then build a machine normally, make sure you have ~10GB of disk space available, and I recommend using an LVM volume rather than just using the whole disk, but it's less critical for this build.
 
 Once the node is built log in (localadmin:ubuntu are the default), and become root (I usually do "sudo -H bash"), or preface all the following commands with "sudo".
 
