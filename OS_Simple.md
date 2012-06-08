@@ -51,8 +51,7 @@ After that completes, we can grab the code to automate the most of the rest of t
 
 Then you need to set up your site:
 
-	cp os-docs/examples/site.pp /etc/puppet/manifests/
-	cp os-docs/examples/cobbler-node.pp /etc/puppet/manifests/
+	cp site.pp cobbler-node.pp /etc/puppet/manifests/
 
 YOU MUST THEN EDIT THESE FILES.  They are fairly well documented, but please comment with questions.
 
