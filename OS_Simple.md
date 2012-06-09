@@ -53,7 +53,7 @@ Then you need to set up your site:
 
 	cp site.pp cobbler-node.pp /etc/puppet/manifests/
 
-YOU MUST THEN EDIT THESE FILES.  They are fairly well documented, but please comment with questions.
+YOU MUST THEN EDIT THESE FILES.  They are fairly well documented, but please comment with questions. You can also read through these descriptions: [Cobbler Node](https://github.com/CiscoSystems/cisco-openstack-docs/blob/master/Cobbler-Node.md)  and [Site](https://github.com/CiscoSystems/cisco-openstack-docs/blob/master/Site.md)
 
 Then 'puppet apply' it:
 
