@@ -1,7 +1,7 @@
 #!/bin/bash
 if [[ -n $2 ]]
   then domain=$2
-  else domain="example.com"
+  else domain="sdu.lab"
 fi
 sudo cobbler system edit --name=$1 --netboot-enable=Y
 sudo cobbler system poweroff --name=$1

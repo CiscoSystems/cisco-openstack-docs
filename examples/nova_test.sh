@@ -6,8 +6,8 @@ source /root/openrc
 
 # get an image to test with
 #wget http://uec-images.ubuntu.com/releases/11.10/release/ubuntu-11.10-server-cloudimg-amd64-disk1.img
-wget http://cloud-images.ubuntu.com/precise/current/precise-server-cloudimg-amd64-disk1.img
-#wget http://128.107.252.163:/precise-server-cloudimg-amd64-disk1.img
+#wget http://cloud-images.ubuntu.com/precise/current/precise-server-cloudimg-amd64-disk1.img
+wget http://128.107.252.163:/precise-server-cloudimg-amd64-disk1.img
 
 # import that image into glance
 glance add name="precise-amd64" is_public=true container_format=ovf disk_format=qcow2 < precise-server-cloudimg-amd64-disk1.img
