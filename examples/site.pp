@@ -7,7 +7,11 @@ Exec { logoutput => true }
 # Need our cobbler definitions
 import "cobbler-node"
 
+# Add the swift definitions
+# import "swift-node"
+
 # Experimental.  Add a pre-define set of ssh keys to the root account.  This is really only useful for debug purposes, and is _NOT_ the right way to distribute remote access.
+# If you want, you can enable ssh authorized_keys distribution from an authorized_keys file stored in /etc/puppet/files by default.  NOTE: YOU WILL OVERWRITE ROOT's authorized_keys ON ALL NODES WITH THIS, INCLUDING THE PUPPETMASTER NODE!
 #import "ssh-keys"
 
 #Build Server definition.
@@ -30,6 +34,41 @@ node /build-0/ inherits "cobbler-node" {
     puppetmaster_address => $::ipaddress_eth0,
     mysql_password => 'ubuntu',	
   }
+
+  file {'/etc/puppet/files':
+    ensure => directory,
+    owner => 'root',
+    group => 'root',
+    mode => '0755',
+  }
+  
+  file {'/etc/puppet/fileserver.conf':
+    ensure => file,
+    owner => 'root',
+    group => 'root',
+    mode => '0644',
+    content => '
+# This file consists of arbitrarily named sections/modules
+# defining where files are served from and to whom
+
+# Define a section 'files'
+# Adapt the allow/deny settings to your needs. Order
+# for allow/deny does not matter, allow always takes precedence
+# over deny
+[files]
+  path /etc/puppet/files
+  allow *
+#  allow *.example.com
+#  deny *.evil.example.com
+#  allow 192.168.0.0/24
+
+[plugins]
+#  allow *.example.com
+#  deny *.evil.example.com
+#  allow 192.168.0.0/24
+',
+  }
+
 }
 
 # base parameters for managed nodes (not necessarily the cobbler/puppetmaster node)
@@ -125,6 +164,11 @@ node /sdu-os-1/ inherits flat_dhcp {
     rabbit_password         => $rabbit_password,
     rabbit_user             => $rabbit_user,
     export_resources        => false,
+    cache_server_ip         => '127.0.0.1',
+    cache_server_port       => '11211',
+    swift                   => true,
+#    quantum                 => true,
+#    horizon_app_links	    => '[ ["Nagios","http://nagios:8808"],["Ganglia","http://ganglia:1123/graphite"],["Statsd","http://stats"] ]',
   }
 
 }

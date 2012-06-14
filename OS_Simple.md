@@ -78,4 +78,15 @@ user: localadmin, password: ubuntu.  If you SU to root, there is an openrc auth 
 
 You should now have a cirros image and a running instance (called dans_vm if you didn't change anything).
 
+Adding in Swift
+---------------
 
+Swift adds a scaleable redundant object storage system to the openstack environment, and is a core part of the general model.  In order to add swift, you will need a minimum of 3 additional machines, prefereably with a large number of fast hard drives, with RAID preferably disabled (that's right RAID is not recommended for Swift clusters).
+
+Since the system does not yet catalog devices, you will need to manually define the devices to be used by the swift system and configure the appropriate "nodes" and "rings" for the number of devices defined.  The included example is set up for two devices, either LVM based devices (useful if you are using UCS blades which nominally only support a maximum of 2 drives today or are working in a constrained development environment) or perferably raw direct access devices.  The puppet modules will attempt to format the entire device as an XFS file system, and then add them in to the system.
+
+EDIT THE swift-nodes.pp FILE before including it in your site.pp file.  Then you can add the swift-nodes.pp file into your site.pp (or uncomment it from the example file):
+
+  import "swift-nodes"
+
+Build/re-build the swift machines, and you should have a swift capable system.

@@ -27,6 +27,7 @@ repos:
     https://github.com/CiscoSystems/puppet-cobbler: cobbler
     https://github.com/CiscoSystems/puppet-apt-cacher-ng: apt-cacher-ng
     https://github.com/puppetlabs/puppetlabs-ntp: ntp
+    https://github.com/CiscoSystems/puppetlabs-lvm: lvm
   checkout_branches:
 #  keystone: dev
 #  glance: dev
