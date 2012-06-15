@@ -84,8 +84,8 @@ node base {
   $admin_token             = 'admin_token'
   $mysql_root_password     = 'ubuntu' 
 
-  $nova_service_password   = 'nova_pass'
-  $glance_service_password = 'glance_pass'
+  $nova_user_password      = 'nova_pass'
+  $glance_user_password    = 'glance_pass'
 
   $admin_email             = 'admin@example.com'
 
@@ -158,9 +158,9 @@ node /sdu-os-1/ inherits flat_dhcp {
     keystone_db_password    => $keystone_db_password,
     keystone_admin_token    => $admin_token,
     glance_db_password      => $glance_db_password,
-    glance_service_password => $glance_service_password,
+    glance_user_password    => $glance_user_password,
     nova_db_password        => $nova_db_password,
-    nova_service_password   => $nova_service_password,
+    nova_user_password      => $nova_user_password,
     rabbit_password         => $rabbit_password,
     rabbit_user             => $rabbit_user,
     export_resources        => false,
