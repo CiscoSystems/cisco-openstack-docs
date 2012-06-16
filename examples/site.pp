@@ -51,7 +51,7 @@ node /build-0/ inherits "cobbler-node" {
 # This file consists of arbitrarily named sections/modules
 # defining where files are served from and to whom
 
-# Define a section 'files'
+# Define a section "files"
 # Adapt the allow/deny settings to your needs. Order
 # for allow/deny does not matter, allow always takes precedence
 # over deny
