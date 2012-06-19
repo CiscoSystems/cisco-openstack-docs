@@ -15,25 +15,24 @@
 # and aren't using an organization domain, just leave the value as ""
 # An example MD5 crypted password is ubuntu: $6$UfgWxrIv$k4KfzAEMqMg.fppmSOTd0usI4j6gfjs0962.JXsoJRWa5wMz8yQk4SfInn4.WZ3L/MCt5u.62tHDGB36EhiKF1
 # which is used by the cobbler preseed file to set up the default admin user.
+
+$cobbler_node_ip = 192.168.100.254 
+
 node /cobbler-node/ {
 
-# class { puppet:
-#  run_master => true,
-#  puppetmaster_address => "sdu-os-0.sdu.lab",
-# }
 
  class { cobbler:
-  node_subnet => "192.168.100.0",
-  node_netmask => "255.255.255.0",
-  node_gateway => "192.168.100.1",
-  node_dns => "192.168.26.186",
-  ip => '192.168.100.254',
+  node_subnet => '192.168.100.0',
+  node_netmask => '255.255.255.0',
+  node_gateway => '192.168.100.1',
+  node_dns => "${cobbler_node_ip}",
+  ip => "${cobbler_node_ip}",
   dns_service => 'dnsmasq',
   dhcp_service => 'dnsmasq',
   dhcp_ip_low => '192.168.100.50',
   dhcp_ip_high => '192.168.100.59',
-  domain_name => "sdu.lab",
-  proxy => "http://192.168.26.163:3142/",
+  domain_name => 'sdu.lab',
+  proxy => "http://${cobbler_node_ip}:3142/",
   password_crypted => '$6$UfgWxrIv$k4KfzAEMqMg.fppmSOTd0usI4j6gfjs0962.JXsoJRWa5wMz8yQk4SfInn4.WZ3L/MCt5u.62tHDGB36EhiKF1',
  }
 
@@ -51,7 +50,7 @@ echo "server ${http_server} iburst" > /target/etc/ntp.conf ; \
 echo "auto eth1" >> /target/etc/network/interfaces ; \
 echo "iface eth1 inet loopback" >> /target/etc/network/interfaces
 ',
-  proxy => 'http://128.107.252.163:3142/',
+  proxy => "http://${cobbler_node_ip}:3142/",
   password_crypted => '$6$5NP1.NbW$WOXi0W1eXf9GOc0uThT5pBNZHqDH9JNczVjt9nzFsH7IkJdkUpLeuvBU.Zs9x3P6LBGKQh6b0zuR8XSlmcuGn.',
   expert_disk => true,
   diskpart => ['/dev/sdc'],
@@ -72,8 +71,6 @@ cobbler::node { "control-1":
  power_user => "admin",
  power_password => "Cisco123!",
  power_id => "CONTROL-1",
- add_hosts_entry => true,
- extra_host_aliases => ["nova","keystone","glance","horizon"],
  }
 
 cobbler::node { "compute-1":
