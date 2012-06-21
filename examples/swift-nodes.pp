@@ -60,7 +60,7 @@ class swift-ucs-blade-lvm {
 
 node /swift-stor-1/ {
 
-  include swift-ucs-blades-lvs
+  include swift-ucs-blades-lvm
   $swift_zone = 1
   include role_swift_storage
 
@@ -68,14 +68,14 @@ node /swift-stor-1/ {
 
 node /swift-stor-2/ {
 
-  include swift-ucs-blades-lvs
+  include swift-ucs-blades-lvm
   $swift_zone = 2
   include role_swift_storage
 
 }
 node /swift-stor-3/ {
 
-  include swift-ucs-blades-lvs
+  include swift-ucs-blades-lvm
   $swift_zone = 3
   include role_swift_storage
 
