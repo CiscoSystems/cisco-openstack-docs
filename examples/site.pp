@@ -8,7 +8,7 @@ Exec { logoutput => true }
 import "cobbler-node"
 
 # Add the swift definitions
-# import "swift-node"
+# import "swift-nodes"
 
 # Experimental.  Add a pre-define set of ssh keys to the root account.  This is really only useful for debug purposes, and is _NOT_ the right way to distribute remote access.
 # If you want, you can enable ssh authorized_keys distribution from an authorized_keys file stored in /etc/puppet/files by default.  NOTE: YOU WILL OVERWRITE ROOT's authorized_keys ON ALL NODES WITH THIS, INCLUDING THE PUPPETMASTER NODE!
