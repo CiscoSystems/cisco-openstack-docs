@@ -48,7 +48,8 @@ sed -e "/logdir/ a pluginsync=true" -i /target/etc/puppet/puppet.conf ; \
 sed -e "s/START=no/START=yes/" -i /target/etc/default/puppet ; \
 echo "server ${http_server} iburst" > /target/etc/ntp.conf ; \
 echo "auto eth1" >> /target/etc/network/interfaces ; \
-echo "iface eth1 inet loopback" >> /target/etc/network/interfaces
+echo "iface eth1 inet loopback" >> /target/etc/network/interfaces ; \
+true
 ',
   proxy => "http://${cobbler_node_ip}:3142/",
   password_crypted => '$6$5NP1.NbW$WOXi0W1eXf9GOc0uThT5pBNZHqDH9JNczVjt9nzFsH7IkJdkUpLeuvBU.Zs9x3P6LBGKQh6b0zuR8XSlmcuGn.',
