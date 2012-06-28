@@ -2,7 +2,7 @@ d-i mirror/country string manual
 d-i mirror/http/hostname string us.archive.ubuntu.com
 d-i mirror/http/directory string /ubuntu
 d-i mirror/http/proxy string <%= proxy %>
-d-i partman-auto/disk string <%= boot_disk %><% diskpart.each do |element| -%><%= element %> <% end %>
+d-i partman-auto/disk string <%= boot_disk %> <% diskpart.each do |element| -%><%= element %> <% end %>
 d-i partman/alignment string cylinder
 d-i partman-md/device_remove_md boolean true
 d-i partman-md/confirm boolean true
@@ -23,13 +23,11 @@ openstack ::                          \
         mountpoint{ /boot }                     \
 .                                               \
 10240 10240 10240 ext4                          \
-        $primary{ }
-        device{ <%= boot_disk %>
+        $primary{ }                             \
+        device{ <%= boot_disk %> }                       \
         method{ format } format{ }              \
         use_filesystem{ } filesystem{ ext4 }    \
         mountpoint{ / }                         \
-        in_vg{ nova-volumes }                   \
-        lv_name{ slash }                        \
 .                                               \
 <% diskpart.each do |element| -%>20480 1000000 1000000000 ext4                        \
         $defaultignore{ }                       \
@@ -45,7 +43,31 @@ openstack ::                          \
         in_vg{ nova-volumes }                   \
         lv_name{ swap }                         \
 .                                               \
-10240 10240 102400 ext4                         \
+1024 1000 102400 ext4                         \
+        $lvmok{ }                               \
+        method{ format } format{ }              \
+        use_filesystem{ } filesystem{ ext4 }    \
+        mountpoint{ /home }          \
+        in_vg{ nova-volumes }                   \
+        lv_name{ home }                      \
+.                                               \
+1024 1000 102400 ext4                         \
+        $lvmok{ }                               \
+        method{ format } format{ }              \
+        use_filesystem{ } filesystem{ ext4 }    \
+        mountpoint{ /usr }          \
+        in_vg{ nova-volumes }                   \
+        lv_name{ usr }                      \
+.                                               \
+1024 1000 102400 ext4                         \
+        $lvmok{ }                               \
+        method{ format } format{ }              \
+        use_filesystem{ } filesystem{ ext4 }    \
+        mountpoint{ /var }          \
+        in_vg{ nova-volumes }                   \
+        lv_name{ var }                      \
+.                                               \
+1024 1000 102400 ext4                         \
         $lvmok{ }                               \
         method{ format } format{ }              \
         use_filesystem{ } filesystem{ ext4 }    \
@@ -53,7 +75,7 @@ openstack ::                          \
         in_vg{ nova-volumes }                   \
         lv_name{ libvirt }                      \
 .                                               \
-10240 10240 102400 ext4                         \
+1024 10 10240 ext4                         \
         $lvmok{ }                               \
         mountpoint{ /tmp/hack }                 \
         in_vg{ nova-volumes }                   \
