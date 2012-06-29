@@ -37,13 +37,13 @@ openstack ::                          \
         vg_name{ nova-volumes }                 \
 .                                               \
 <% end -%>
-4098 512 4098 linux-swap                        \
+4096 512 4096 linux-swap                        \
         $lvmok{ }                               \
         method{ swap } format{ }                \
         in_vg{ nova-volumes }                   \
         lv_name{ swap }                         \
 .                                               \
-1024 1000 102400 ext4                         \
+ 1000 102400 ext4                         \
         $lvmok{ }                               \
         method{ format } format{ }              \
         use_filesystem{ } filesystem{ ext4 }    \
@@ -51,7 +51,7 @@ openstack ::                          \
         in_vg{ nova-volumes }                   \
         lv_name{ home }                      \
 .                                               \
-1024 1000 102400 ext4                         \
+40960 100 102400 ext4                         \
         $lvmok{ }                               \
         method{ format } format{ }              \
         use_filesystem{ } filesystem{ ext4 }    \
@@ -59,7 +59,7 @@ openstack ::                          \
         in_vg{ nova-volumes }                   \
         lv_name{ usr }                      \
 .                                               \
-1024 1000 102400 ext4                         \
+10240 1000 102400 ext4                         \
         $lvmok{ }                               \
         method{ format } format{ }              \
         use_filesystem{ } filesystem{ ext4 }    \
@@ -67,7 +67,7 @@ openstack ::                          \
         in_vg{ nova-volumes }                   \
         lv_name{ var }                      \
 .                                               \
-1024 1000 102400 ext4                         \
+81920 150 102400 ext4                         \
         $lvmok{ }                               \
         method{ format } format{ }              \
         use_filesystem{ } filesystem{ ext4 }    \
