@@ -1,21 +1,48 @@
 #
-# base variables and configuration shared by all!
+# This document serves as an example of how to deploy
+# basic single and multi-node openstack environments.
 #
-# Comment out the following for "production", otherwise, you'll see every exec call from every puppet run, which can get a little overwhelming!
-Exec { logoutput => true }
 
-# Need our cobbler definitions
-import "cobbler-node"
+# deploy a script that can be used to test nova
+class { 'openstack::test_file': }
 
-# Add the swift definitions
-# import "swift-nodes"
+####### shared variables ##################
 
-# Experimental.  Add a pre-define set of ssh keys to the root account.  This is really only useful for debug purposes, and is _NOT_ the right way to distribute remote access.
-# If you want, you can enable ssh authorized_keys distribution from an authorized_keys file stored in /etc/puppet/files by default.  NOTE: YOU WILL OVERWRITE ROOT's authorized_keys ON ALL NODES WITH THIS, INCLUDING THE PUPPETMASTER NODE!
-#import "ssh-keys"
 
-#Build Server definition.
-node /build-0/ inherits "cobbler-node" {
+# this section is used to specify global variables that will
+# be used in the deployment of multi and single node openstack
+# environments
+
+# assumes that eth0 is the public interface
+$public_interface        = 'eth0'
+# assumes that eth1 is the interface that will be used for the vm network
+# this configuration assumes this interface is active but does not have an
+# ip address allocated to it.
+$private_interface       = 'eth0.210'
+# credentials
+$admin_email             = 'root@localhost'
+$admin_password          = 'keystone_admin'
+$keystone_db_password    = 'keystone_db_pass'
+$keystone_admin_token    = 'keystone_admin_token'
+$nova_db_password        = 'nova_pass'
+$nova_user_password      = 'nova_pass'
+$glance_db_password      = 'glance_pass'
+$glance_user_password    = 'glance_pass'
+$rabbit_password         = 'openstack_rabbit_password'
+$rabbit_user             = 'openstack_rabbit_user'
+$fixed_network_range     = '10.0.0.0/24'
+$floating_ip_range          = '192.168.200.64/27'
+# switch this to true to have all service log at verbose
+$verbose                 = 'false'
+# by default it does not enable atomatically adding floating IPs
+$auto_assign_floating_ip = false
+
+import 'cobbler-node'
+import 'ssh-keys'
+#### end shared variables #################
+
+
+node /os-build/ inherits "cobbler-node" {
 
 #change the servers for your NTP environment
   class { ntp:
@@ -28,10 +55,10 @@ node /build-0/ inherits "cobbler-node" {
   class { apt-cacher-ng:
     }
 
-# set the right local puppet environment up.  This builds puppetmaster with storedconfigs (and a local mysql instance)
+# set the right local puppet environment up.  This builds puppetmaster with storedconfigs (a nd a local mysql instance)
   class { puppet:
     run_master => true,
-    puppetmaster_address => $::ipaddress_eth0,
+    puppetmaster_address => $::fqdn,
     mysql_password => 'ubuntu',	
   }
 
@@ -71,92 +98,36 @@ node /build-0/ inherits "cobbler-node" {
 
 }
 
-# base parameters for managed nodes (not necessarily the cobbler/puppetmaster node)
-node base {
+$controller_node_address  = '192.168.200.10'
 
-  $rabbit_user             = 'rabbit_user'
-  $rabbit_password         = 'rabbit_password'
-  $nova_db_password        = 'nova_db_password'
-  $keystone_db_password    = 'keystone_db_password'
-  $glance_db_password      = 'glance_db_password'
-  $sql_connection          = "mysql://nova:${nova_db_password}@${controller_node_internal}/nova"
-  $admin_password          = 'admin_password'
-  $admin_token             = 'admin_token'
-  $mysql_root_password     = 'ubuntu' 
+$controller_node_public   = $controller_node_address
+$controller_node_internal = $controller_node_address
+$sql_connection         = "mysql://nova:${nova_db_password}@${controller_node_internal}/nova"
 
-  $nova_user_password      = 'nova_pass'
-  $glance_user_password    = 'glance_pass'
+node /control01/ {
 
-  $admin_email             = 'admin@example.com'
+#  class { 'nova::volume': enabled => true }
 
-  $public_interface        = 'eth0'
-  $private_interface       = 'eth1'
- 
-  $fixed_range             = '10.0.0.0/16'
-
-  $verbose                 = true
-
-  class { puppet:
-    run_agent => true,
-    puppetmaster_address => "sdu-os-0.sdu.lab",
-  }
-
-  class { ntp:
-    servers => [ "ntp.esl.cisco.com", "2.ntp.esl.cisco.com", "3.ntp.esl.cisco.com", ],
-    ensure => running,
-    autoupdate => true,
-  }
-
-# This will set up a test nova compute instance script. You need to manually run this if you want to run a quick test on one of the control nodes
-
-  file { '/tmp/test_nova.sh':
-    source => 'puppet:///modules/openstack/nova_test.sh',
-  }
-
-}
-
-# variables related to the flat_DHCP environment
-
-node flat_dhcp inherits base {
-
-  $controller_node_internal = '192.168.100.101'
-  $controller_node_public   = '192.168.100.101' 
-  $sql_connection           = "mysql://nova:${nova_db_password}@${controller_node_internal}/nova"
-
-  class { 'openstack::auth_file': 
-    admin_password       => $admin_password,
-    keystone_admin_token => $admin_token, 
-    controller_node      => $controller_node_internal,
-  }
-
-}
-
-# controller for flat_DHCP
-# NOTE: Change the floating_range
-node /sdu-os-1/ inherits flat_dhcp {
-
-  class { 'nova::volume':
-    enabled => true,
-  }
-
-  class { 'nova::volume::iscsi': }
-
+#  class { 'nova::volume::iscsi': }
 
   class { 'openstack::controller':
     public_address          => $controller_node_public,
     public_interface        => $public_interface,
     private_interface       => $private_interface,
     internal_address        => $controller_node_internal,
-    floating_range          => '192.168.100.64/28',
-    fixed_range             => $fixed_range,
+    floating_range          => $floating_ip_range,
+    fixed_range             => $fixed_network_range,
+    # by default it does not enable multi-host mode
     multi_host              => false,
+    # by default is assumes flat dhcp networking mode
     network_manager         => 'nova.network.manager.FlatDHCPManager',
     verbose                 => $verbose,
+    auto_assign_floating_ip => $auto_assign_floating_ip,
     mysql_root_password     => $mysql_root_password,
     admin_email             => $admin_email,
     admin_password          => $admin_password,
     keystone_db_password    => $keystone_db_password,
-    keystone_admin_token    => $admin_token,
+    keystone_admin_token    => $keystone_admin_token,
     glance_db_password      => $glance_db_password,
     glance_user_password    => $glance_user_password,
     nova_db_password        => $nova_db_password,
@@ -164,43 +135,42 @@ node /sdu-os-1/ inherits flat_dhcp {
     rabbit_password         => $rabbit_password,
     rabbit_user             => $rabbit_user,
     export_resources        => false,
-    cache_server_ip         => '127.0.0.1',
-    cache_server_port       => '11211',
-    swift                   => true,
-#    quantum                 => true,
-#    horizon_app_links	    => '[ ["Nagios","http://nagios:8808"],["Ganglia","http://ganglia:1123/graphite"],["Statsd","http://stats"] ]',
+  }
+
+  class { 'openstack::auth_file':
+    admin_password       => $admin_password,
+    keystone_admin_token => $keystone_admin_token,
+    controller_node      => $controller_node_internal,
+  }
+
+
+}
+
+node /compute01/ {
+
+  class { 'openstack::compute':
+    public_interface   => $public_interface,
+    private_interface  => $private_interface,
+    internal_address   => $ipaddress,
+    libvirt_type       => 'kvm',
+    fixed_range        => $fixed_network_range,
+    network_manager    => 'nova.network.manager.FlatDHCPManager',
+    multi_host         => false,
+    sql_connection     => $sql_connection,
+    nova_user_password => $nova_user_password,
+    rabbit_host        => $controller_node_internal,
+    rabbit_password    => $rabbit_password,
+    rabbit_user        => $rabbit_user,
+    glance_api_servers => "${controller_node_internal}:9292",
+    vncproxy_host      => $controller_node_public,
+    vnc_enabled        => 'true',
+    verbose            => $verbose,
+    manage_volumes     => true,
+    nova_volume        => 'nova-volumes'
   }
 
 }
 
-#Build your compute nodes
-node /compute-[1-9]/ inherits flat_dhcp {
-
-#Needed to address a short term failure in nova-volume management - bug has been filed
-  class { 'nova::compute::file_hack': }
-
-  class { 'openstack::compute':
-    private_interface  => $private_interface,
-    internal_address   => $ipaddress_eth0,
-    glance_api_servers => "${controller_node_internal}:9292",
-    rabbit_host        => $controller_node_internal,
-    rabbit_password    => $rabbit_password,
-    rabbit_user        => $rabbit_user,
-    sql_connection     => $sql_connection,
-    vncproxy_host      => $controller_node_internal,
-    verbose            => $verbose,
-    manage_volumes     => true,
- }
-
-}
-
-
-#
-# Default catch-all node definition
-#
-
 node default {
-  notify { 'default_node': }
+  notify{"Default Node: Perhaps add a node definition to site.pp": }
 }
-
-

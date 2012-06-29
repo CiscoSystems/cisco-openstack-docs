@@ -16,21 +16,21 @@
 # An example MD5 crypted password is ubuntu: $6$UfgWxrIv$k4KfzAEMqMg.fppmSOTd0usI4j6gfjs0962.JXsoJRWa5wMz8yQk4SfInn4.WZ3L/MCt5u.62tHDGB36EhiKF1
 # which is used by the cobbler preseed file to set up the default admin user.
 
-$cobbler_node_ip = 192.168.100.254 
+$cobbler_node_ip = "192.168.99.254"
 
 node /cobbler-node/ {
 
 
  class { cobbler:
-  node_subnet => '192.168.100.0',
+  node_subnet => '192.168.99.0',
   node_netmask => '255.255.255.0',
-  node_gateway => '192.168.100.1',
+  node_gateway => '192.168.99.1',
   node_dns => "${cobbler_node_ip}",
   ip => "${cobbler_node_ip}",
   dns_service => 'dnsmasq',
   dhcp_service => 'dnsmasq',
-  dhcp_ip_low => '192.168.100.50',
-  dhcp_ip_high => '192.168.100.59',
+  dhcp_ip_low => '192.168.99.50',
+  dhcp_ip_high => '192.168.99.59',
   domain_name => 'sdu.lab',
   proxy => "http://${cobbler_node_ip}:3142/",
   password_crypted => '$6$UfgWxrIv$k4KfzAEMqMg.fppmSOTd0usI4j6gfjs0962.JXsoJRWa5wMz8yQk4SfInn4.WZ3L/MCt5u.62tHDGB36EhiKF1',
@@ -41,50 +41,72 @@ node /cobbler-node/ {
  }
 
 # This will build a preseed file called 'cisco-preseed' in /etc/cobbler/preseeds/
- cobbler::ubuntu::preseed { "cisco-preseed":
-  packages => "openssh-server lvm2 ntp puppet",
+ cobbler::ubuntu::preseed { "cisco-preseed-ab":
+  packages => "openssh-server vim vlan lvm2 ntp puppet",
+  ntp_server => "ntp.esl.cisco.com",
   late_command => '
 sed -e "/logdir/ a pluginsync=true" -i /target/etc/puppet/puppet.conf ; \
+sed -e "/logdir/ a server=os-build.sdu.lab" -i /target/etc/puppet/puppet.conf ; \
 sed -e "s/START=no/START=yes/" -i /target/etc/default/puppet ; \
-echo "server ${http_server} iburst" > /target/etc/ntp.conf ; \
-echo "auto eth1" >> /target/etc/network/interfaces ; \
-echo "iface eth1 inet loopback" >> /target/etc/network/interfaces ; \
+echo -e "server ntp.esl.cisco.com iburst\nserver 1.ntp.esl.cisco.com\nserver 2.ntp.esl.cisco.com" > /target/etc/ntp.conf ; \
+echo "8021q" >> /target/etc/modules ; \
+echo -e "# Private Interface\nauto eth0.98\niface eth0.98 inet manual\n\tvlan-raw-device eth0\n\tup ifconfig eth0.98 0.0.0.0 up\n\tup ip link set eth0.98 promisc on" >> /target/etc/network/interfaces ; \
 true
 ',
   proxy => "http://${cobbler_node_ip}:3142/",
   password_crypted => '$6$5NP1.NbW$WOXi0W1eXf9GOc0uThT5pBNZHqDH9JNczVjt9nzFsH7IkJdkUpLeuvBU.Zs9x3P6LBGKQh6b0zuR8XSlmcuGn.',
   expert_disk => true,
-  diskpart => ['/dev/sdc'],
-  boot_disk => '/dev/sdc',
+  diskpart => ['/dev/sdb'],
+  boot_disk => '/dev/sda',
+ }
+
+# This will build a preseed file called 'cisco-preseed' in /etc/cobbler/preseeds/
+ cobbler::ubuntu::preseed { "cisco-preseed":
+  packages => "openssh-server vim vlan lvm2 ntp puppet",
+  ntp_server => "ntp.esl.cisco.com",
+  late_command => '
+sed -e "/logdir/ a pluginsync=true" -i /target/etc/puppet/puppet.conf ; \
+sed -e "/logdir/ a server=os-build.sdu.lab" -i /target/etc/puppet/puppet.conf ; \
+sed -e "s/START=no/START=yes/" -i /target/etc/default/puppet ; \
+echo -e "server ntp.esl.cisco.com iburst\nserver 1.ntp.esl.cisco.com\nserver 2.ntp.esl.cisco.com" > /target/etc/ntp.conf ; \
+echo "8021q" >> /target/etc/modules ; \
+echo -e "# Private Interface\nauto eth0.98\niface eth0.98 inet manual\n\tvlan-raw-device eth0\n\tup ifconfig eth0.98 0.0.0.0 up\n\tup ip link set eth0.98 promisc on" >> /target/etc/network/interfaces ; \
+true
+',
+  proxy => "http://${cobbler_node_ip}:3142/",
+  password_crypted => '$6$5NP1.NbW$WOXi0W1eXf9GOc0uThT5pBNZHqDH9JNczVjt9nzFsH7IkJdkUpLeuvBU.Zs9x3P6LBGKQh6b0zuR8XSlmcuGn.',
+  expert_disk => true,
+  diskpart => ['/dev/sdb'],
+  boot_disk => '/dev/sda',
  }
 
 
 # The following are node definitions that will allow cobbler to PXE boot the hypervisor OS onto the system (based on the preseed built above)
 # You will want to adjust the "title" (maps to system name in cobbler), mac address (this is the PXEboot MAC target), IP (this is a static DHCP delivered address for this particular node), domain (added to /etc/resolv.conf for proper function), power address, the same one for power-strip based power control, per-node for IPMI/CIMC/ILO based control, power-ID needs to map to power port or service profile name (in UCSM based deployements)
-cobbler::node { "control-1":
- mac => "00:25:b5:00:00:01",
+cobbler::node { "control01":
+ mac => "00:25:B5:0A:00:1E",
  profile => "precise-x86_64-auto",
- ip => "192.168.100.10",
- domain => "example.lab",
- preseed => "/etc/cobbler/preseeds/cisco-preseed",
- power_address => "192.168.100.5:org-EXAMPLE",
+ ip => "192.168.99.10",
+ domain => "sdu.lab",
+ preseed => "/etc/cobbler/preseeds/cisco-preseed-ab",
+ power_address => "192.168.26.15:org-SDU",
  power_type => "ucs",
  power_user => "admin",
- power_password => "Cisco123!",
- power_id => "CONTROL-1",
+ power_password => "Sdu!12345",
+ power_id => "SDU-OS-2-1",
  }
 
-cobbler::node { "compute-1":
- mac => "00:25:b5:00:01:01",
+cobbler::node { "compute01":
+ mac => "00:25:B5:0A:00:7D",
  profile => "precise-x86_64-auto",
- ip => "192.168.100.100",
- domain => "example.lab",
+ ip => "192.168.99.20",
+ domain => "sdu.lab",
  preseed => "/etc/cobbler/preseeds/cisco-preseed",
- power_address => "192.168.100.5:org-EXAMPLE",
+ power_address => "192.168.26.15:org-SDU",
  power_type => "ucs",
  power_user => "admin",
- power_password => "Cisco123!",
- power_id => "COMPUTE-1",
+ power_password => "Sdu!12345",
+ power_id => "SDU-OS-2-2",
  }
 # Repeat as necessary.
 }
