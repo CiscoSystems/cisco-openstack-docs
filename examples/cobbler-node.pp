@@ -41,36 +41,16 @@ node /cobbler-node/ {
  }
 
 # This will build a preseed file called 'cisco-preseed' in /etc/cobbler/preseeds/
- cobbler::ubuntu::preseed { "cisco-preseed-ab":
-  packages => "openssh-server vim vlan lvm2 ntp puppet",
-  ntp_server => "ntp.esl.cisco.com",
-  late_command => '
-sed -e "/logdir/ a pluginsync=true" -i /target/etc/puppet/puppet.conf ; \
-sed -e "/logdir/ a server=os-build.sdu.lab" -i /target/etc/puppet/puppet.conf ; \
-sed -e "s/START=no/START=yes/" -i /target/etc/default/puppet ; \
-echo -e "server ntp.esl.cisco.com iburst\nserver 1.ntp.esl.cisco.com\nserver 2.ntp.esl.cisco.com" > /target/etc/ntp.conf ; \
-echo "8021q" >> /target/etc/modules ; \
-echo -e "# Private Interface\nauto eth0.98\niface eth0.98 inet manual\n\tvlan-raw-device eth0\n\tup ifconfig eth0.98 0.0.0.0 up\n\tup ip link set eth0.98 promisc on" >> /target/etc/network/interfaces ; \
-true
-',
-  proxy => "http://${cobbler_node_ip}:3142/",
-  password_crypted => '$6$5NP1.NbW$WOXi0W1eXf9GOc0uThT5pBNZHqDH9JNczVjt9nzFsH7IkJdkUpLeuvBU.Zs9x3P6LBGKQh6b0zuR8XSlmcuGn.',
-  expert_disk => true,
-  diskpart => ['/dev/sdb'],
-  boot_disk => '/dev/sda',
- }
-
-# This will build a preseed file called 'cisco-preseed' in /etc/cobbler/preseeds/
  cobbler::ubuntu::preseed { "cisco-preseed":
   packages => "openssh-server vim vlan lvm2 ntp puppet",
-  ntp_server => "ntp.esl.cisco.com",
+  ntp_server => "192.168.100.1",
   late_command => '
 sed -e "/logdir/ a pluginsync=true" -i /target/etc/puppet/puppet.conf ; \
-sed -e "/logdir/ a server=os-build.sdu.lab" -i /target/etc/puppet/puppet.conf ; \
+sed -e "/logdir/ a server=$cobbler_node_ip" -i /target/etc/puppet/puppet.conf ; \
 sed -e "s/START=no/START=yes/" -i /target/etc/default/puppet ; \
-echo -e "server ntp.esl.cisco.com iburst\nserver 1.ntp.esl.cisco.com\nserver 2.ntp.esl.cisco.com" > /target/etc/ntp.conf ; \
+echo -e "server 192.168.99.1 iburst\nserver 5.ntp.esl.cisco.com\nserver 7.ntp.esl.cisco.com" > /target/etc/ntp.conf ; \
 echo "8021q" >> /target/etc/modules ; \
-echo -e "# Private Interface\nauto eth0.98\niface eth0.98 inet manual\n\tvlan-raw-device eth0\n\tup ifconfig eth0.98 0.0.0.0 up\n\tup ip link set eth0.98 promisc on" >> /target/etc/network/interfaces ; \
+echo -e "# Private Interface\nauto eth0.98\niface eth0.98 inet manual\n\tvlan-raw-device eth0\n\tup ifconfig eth0.98 0.0.0.0 up\n" >> /target/etc/network/interfaces ; \
 true
 ',
   proxy => "http://${cobbler_node_ip}:3142/",
@@ -79,7 +59,6 @@ true
   diskpart => ['/dev/sdb'],
   boot_disk => '/dev/sda',
  }
-
 
 # The following are node definitions that will allow cobbler to PXE boot the hypervisor OS onto the system (based on the preseed built above)
 # You will want to adjust the "title" (maps to system name in cobbler), mac address (this is the PXEboot MAC target), IP (this is a static DHCP delivered address for this particular node), domain (added to /etc/resolv.conf for proper function), power address, the same one for power-strip based power control, per-node for IPMI/CIMC/ILO based control, power-ID needs to map to power port or service profile name (in UCSM based deployements)
@@ -108,5 +87,6 @@ cobbler::node { "compute01":
  power_password => "Sdu!12345",
  power_id => "SDU-OS-2-2",
  }
+
 # Repeat as necessary.
 }

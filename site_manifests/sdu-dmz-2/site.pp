@@ -5,7 +5,7 @@
 
 # deploy a script that can be used to test nova
 class { 'openstack::test_file': }
-
+class { 'apt': }
 ####### shared variables ##################
 
 
@@ -18,10 +18,10 @@ $public_interface        = 'eth0'
 # assumes that eth1 is the interface that will be used for the vm network
 # this configuration assumes this interface is active but does not have an
 # ip address allocated to it.
-$private_interface       = 'eth0.210'
+$private_interface       = 'eth0.98'
 # credentials
 $admin_email             = 'root@localhost'
-$admin_password          = 'keystone_admin'
+$admin_password          = 'Cisco123'
 $keystone_db_password    = 'keystone_db_pass'
 $keystone_admin_token    = 'keystone_admin_token'
 $nova_db_password        = 'nova_pass'
@@ -31,7 +31,7 @@ $glance_user_password    = 'glance_pass'
 $rabbit_password         = 'openstack_rabbit_password'
 $rabbit_user             = 'openstack_rabbit_user'
 $fixed_network_range     = '10.0.0.0/24'
-$floating_ip_range          = '192.168.200.64/27'
+$floating_ip_range       = '192.168.99.64/27'
 # switch this to true to have all service log at verbose
 $verbose                 = 'false'
 # by default it does not enable atomatically adding floating IPs
@@ -46,7 +46,7 @@ node /os-build/ inherits "cobbler-node" {
 
 #change the servers for your NTP environment
   class { ntp:
-    servers => [ "ntp.esl.cisco.com", "2.ntp.esl.cisco.com", "3.ntp.esl.cisco.com", ],
+    servers => [ "192.168.99.1","3.ntp.esl.cisco.com", "5.ntp.esl.cisco.com", "7.ntp.esl.cisco.com", ],
     ensure => running,
     autoupdate => true,
   }
@@ -98,7 +98,7 @@ node /os-build/ inherits "cobbler-node" {
 
 }
 
-$controller_node_address  = '192.168.200.10'
+$controller_node_address  = '192.168.99.10'
 
 $controller_node_public   = $controller_node_address
 $controller_node_internal = $controller_node_address
@@ -106,9 +106,12 @@ $sql_connection         = "mysql://nova:${nova_db_password}@${controller_node_in
 
 node /control01/ {
 
-#  class { 'nova::volume': enabled => true }
-
-#  class { 'nova::volume::iscsi': }
+#change the servers for your NTP environment
+  class { ntp:
+    servers => [ "192.168.99.1","3.ntp.esl.cisco.com", "5.ntp.esl.cisco.com", "7.ntp.esl.cisco.com", ],
+    ensure => running,
+    autoupdate => true,
+  }
 
   class { 'openstack::controller':
     public_address          => $controller_node_public,
@@ -118,7 +121,7 @@ node /control01/ {
     floating_range          => $floating_ip_range,
     fixed_range             => $fixed_network_range,
     # by default it does not enable multi-host mode
-    multi_host              => false,
+    multi_host              => true,
     # by default is assumes flat dhcp networking mode
     network_manager         => 'nova.network.manager.FlatDHCPManager',
     verbose                 => $verbose,
@@ -134,8 +137,12 @@ node /control01/ {
     nova_user_password      => $nova_user_password,
     rabbit_password         => $rabbit_password,
     rabbit_user             => $rabbit_user,
-    export_resources        => false,
+    export_resources        => true,
+  }<-
+  apt::ppa {"ppa:cisco-openstack-mirror/cisco-proposed":
+    release => 'precise',
   }
+
 
   class { 'openstack::auth_file':
     admin_password       => $admin_password,
@@ -146,16 +153,31 @@ node /control01/ {
 
 }
 
-node /compute01/ {
+node /compute0/ {
+
+#change the servers for your NTP environment
+  class { ntp:
+    servers => [ "192.168.99.1","3.ntp.esl.cisco.com", "5.ntp.esl.cisco.com", "7.ntp.esl.cisco.com", ],
+    ensure => running,
+    autoupdate => true,
+  }
+
+  class { 'openstack::auth_file':
+    admin_password       => $admin_password,
+    keystone_admin_token => $keystone_admin_token,
+    controller_node      => $controller_node_internal,
+  }
+
+
 
   class { 'openstack::compute':
     public_interface   => $public_interface,
     private_interface  => $private_interface,
-    internal_address   => $ipaddress,
+    internal_address   => $ipaddress_eth0,
     libvirt_type       => 'kvm',
     fixed_range        => $fixed_network_range,
     network_manager    => 'nova.network.manager.FlatDHCPManager',
-    multi_host         => false,
+    multi_host         => true,
     sql_connection     => $sql_connection,
     nova_user_password => $nova_user_password,
     rabbit_host        => $controller_node_internal,
@@ -167,7 +189,11 @@ node /compute01/ {
     verbose            => $verbose,
     manage_volumes     => true,
     nova_volume        => 'nova-volumes'
+  }<-
+  apt::ppa {"ppa:cisco-openstack-mirror/cisco-proposed":
+    release => 'precise',
   }
+
 
 }
 
