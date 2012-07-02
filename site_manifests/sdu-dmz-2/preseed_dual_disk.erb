@@ -15,6 +15,9 @@ d-i partman-auto/method string lvm
 d-i partman-auto/choose_recipe select openstack 
 d-i partman-auto/expert_recipe string           \
 openstack ::                          \
+1 1 1 free                                	\
+        method{ biosgrub }                      \
+.                                               \
 200 200 200 ext3                                \
         $primary{ } $bootable{ }                \
         device{ <%= boot_disk %> }                      \
