@@ -108,7 +108,13 @@ $controller_node_public   = $controller_node_address
 $controller_node_internal = $controller_node_address
 $sql_connection         = "mysql://nova:${nova_db_password}@${controller_node_internal}/nova"
 
-node /control01/ {
+#Common configuration for all node compute, controller, storage but puppet-master/cobbler
+node base {
+  class { 'collectd':
+  }
+}
+
+node /control01/ inherits base {
 
 #change the servers for your NTP environment
   class { ntp:
@@ -153,11 +159,9 @@ node /control01/ {
     keystone_admin_token => $keystone_admin_token,
     controller_node      => $controller_node_internal,
   }
-
-
 }
 
-node /compute0/ {
+node /compute0/ inherits base {
 
 #change the servers for your NTP environment
   class { ntp:
