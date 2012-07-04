@@ -71,7 +71,7 @@ Testing OpenStack
 Once the nodes are built, and once puppet runs (watch /var/log/syslog on the cobbler node), you should be able to log into the openstack horizon interface:
 
 http://ip-of-your-control-node
-user: admin, password: admin_password (if you didn't change the defaults in the site.pp file)
+user: admin, password: Cisco123 (if you didn't change the defaults in the site.pp file)
 
 you will still need to log into the console of the control node to load in an image:
 user: localadmin, password: ubuntu.  If you SU to root, there is an openrc auth file in root's home directory, and you can launch a test file in /tmp/nova_test.sh.
