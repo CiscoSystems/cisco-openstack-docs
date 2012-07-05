@@ -38,7 +38,10 @@ variables or by setting and exporting the OS_TENANT_NAME, OS_USERNAME,
 OS_PASSWORD, and OS_AUTH_URL environment variables.
 
 The CSV file format is as follows:
-firstname,lastname,username,email"""
+firstname,lastname,username,email
+
+Fields are separated by comma. Use double quotes (") to quote values
+that contain a comma."""
 NO_CREDS_FOUND = "No credentials for Keystone provided and none could be found"
 KEYSTONE_CONFIG = '/etc/keystone/keystone.conf'
 
