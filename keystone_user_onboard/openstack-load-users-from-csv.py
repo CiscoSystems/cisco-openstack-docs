@@ -112,11 +112,14 @@ def main(argv=sys.argv[1:]):
     argparser.add_argument('support_address',
                            help="E-mail address for support")
     argparser.add_argument('csv_file', help="Name of the CSV file")
-    argparser.add_argument('mail_template', help="Name of the e-mail templat")
+    argparser.add_argument('mail_template', help="Name of the e-mail template")
     argparser.add_argument('--role', default="Member",
                            help="role to assign to users [default: Member]")
     argparser.add_argument('--smtp_host', default="localhost",
                            help="SMTP host [default: localhost]")
+    argparser.add_argument('--common_tenant', metavar="TENANT", default=None,
+                           help="If set, all users will be added to TENANT. "
+                                "The default is to create a tenant per user.")
     args = argparser.parse_args(argv)
 
     creds = check_env_for_keystone_creds()
@@ -139,13 +142,22 @@ def main(argv=sys.argv[1:]):
 
     data = csv.reader(open(args.csv_file, 'rb'), delimiter=',', quotechar='"')
     for first_name, last_name, user_name, email in data:
-        if user_name in tenants:
-            tenant = tenants[user_name]
-            print "Tenant named %s already exists. Not creating." % user_name
+        if args.common_tenant:
+            tenant_name = args.common_tenant
+            tenant_description = 'Shared Tenant'
         else:
-            description = "%s %s" % (first_name, last_name)
-            tenant = client.tenants.create(user_name,
-                                           description=description)
+            tenant_name = user_name
+            tenant_description = "%s %s" % (first_name, last_name)
+
+        if tenant_name in tenants:
+            tenant = tenants[user_name]
+            if not args.common_tenant:
+                print("Tenant named %s already exists. "
+                      "Not creating." % user_name)
+        else:
+            tenant = client.tenants.create(tenant_name,
+                                           description=tenant_description)
+            tenants[tenant_name] = tenant
 
         password = generate_password(8)
 
