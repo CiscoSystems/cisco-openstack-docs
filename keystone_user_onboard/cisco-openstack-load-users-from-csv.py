@@ -77,6 +77,7 @@ def generate_password(length):
     chars = string.letters + string.digits
     return ''.join([random.choice(chars) for x in range(length)])
 
+
 def get_role_by_name(client, name):
     for role in client.roles.list():
         if role.name == name:
@@ -148,7 +149,8 @@ def main(argv=sys.argv[1:]):
 
         if user_name in users:
             user = users[user_name]
-            print "User named %s already exists. Only updating password." % user_name
+            print("User named %s already exists. "
+                  "Only updating password." % user_name)
             client.users.update_password(user, password)
         else:
             user = client.users.create(name=user_name,
