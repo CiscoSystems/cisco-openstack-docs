@@ -26,7 +26,6 @@ import sys
 
 
 import keystoneclient.v2_0.client
-USAGE = "%%prog <horizon url> <support address> <csv file>"
 DESCRIPTION = """Creates OpenStack users and tenants based on a CSV file.
 
 If run on the same host as Keystone, the admin token will automatically
