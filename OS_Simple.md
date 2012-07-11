@@ -40,8 +40,8 @@ Once the node is built log in (localadmin:ubuntu are the default), and become ro
 	apt-get update && apt-get dist-upgrade -y
 
 If you didn't install via the preseed file method, you'll need a couple additional packages:
-* Note: add apt-get ipmitool if Cobbler will manage UCS C-Series servers 
-	apt-get install openssh-server lvm2 ntp puppet git rake -y
+
+	apt-get install openssh-server lvm2 ntp puppet git rake ipmitool -y
 
 After that completes, we can grab the code to automate the most of the rest of the build:
 
