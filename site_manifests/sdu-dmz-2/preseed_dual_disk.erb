@@ -26,8 +26,8 @@ openstack ::                          \
         mountpoint{ /boot }                     \
 .                                               \
 10240 10240 10240 ext4                          \
-        $primary{ }
-        device{ <%= boot_disk %>
+        $primary{ }                             \
+        device{ <%= boot_disk %> }              \
         method{ format } format{ }              \
         use_filesystem{ } filesystem{ ext4 }    \
         mountpoint{ / }                         \
