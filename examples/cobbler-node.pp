@@ -51,6 +51,7 @@ sed -e "s/START=no/START=yes/" -i /target/etc/default/puppet ; \
 echo -e "server 192.168.99.1 iburst\nserver 5.ntp.esl.cisco.com\nserver 7.ntp.esl.cisco.com" > /target/etc/ntp.conf ; \
 echo "8021q" >> /target/etc/modules ; \
 echo -e "# Private Interface\nauto eth0.98\niface eth0.98 inet manual\n\tvlan-raw-device eth0\n\tup ifconfig eth0.98 0.0.0.0 up\n" >> /target/etc/network/interfaces ; \
+echo -e "# Public Interface\nauto eth0.105\niface eth0.105 inet manual\n\tvlan-raw-device eth0\n\tup ifconfig eth0.105 0.0.0.0 up\n" >> /target/etc/network/interfaces ; \
 true
 ',
   proxy => "http://${cobbler_node_ip}:3142/",
@@ -67,7 +68,7 @@ cobbler::node { "control01":
  profile => "precise-x86_64-auto",
  ip => "192.168.99.10",
  domain => "sdu.lab",
- preseed => "/etc/cobbler/preseeds/cisco-preseed-ab",
+ preseed => "/etc/cobbler/preseeds/cisco-preseed",
  power_address => "192.168.26.15:org-SDU",
  power_type => "ucs",
  power_user => "admin",
