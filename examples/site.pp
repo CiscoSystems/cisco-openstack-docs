@@ -112,6 +112,9 @@ $sql_connection         = "mysql://nova:${nova_db_password}@${controller_node_in
 node base {
   class { 'collectd':
   }
+
+  class { 'snmpd':
+  }
 }
 
 node /control01/ inherits base {

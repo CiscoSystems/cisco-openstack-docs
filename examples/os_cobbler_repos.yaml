@@ -30,6 +30,7 @@ repos:
     https://github.com/CiscoSystems/puppetlabs-lvm: lvm
     https://github.com/CiscoSystems/puppet-horizion-branding: branding
     https://github.com/CiscoSystems/puppet-collectd : collectd
+    https://github.com/CiscoSystems/puppet-snmpd : snmpd
   checkout_branches:
 #  keystone: dev
 #  glance: dev
