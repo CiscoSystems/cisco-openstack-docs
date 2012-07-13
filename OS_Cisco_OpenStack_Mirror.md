@@ -41,22 +41,21 @@ Once the node is built log in (localadmin:ubuntu are the default), and become ro
 
 If you didn't install via the preseed file method, you'll need a couple additional packages:
 
-	apt-get install openssh-server lvm2 ntp puppet git rake ipmitool -y
+	apt-get install openssh-server lvm2 ntp puppet git rake ipmitool python-software-properties -y
 
 After that completes, we can grab the code to automate the most of the rest of the build:
 
-	git clone https://github.com/CiscoSystems/cisco-openstack-docs os-docs
+	git clone https://github.com/CiscoSystems/cisco-openstack-docs ~/os-docs
 
 We'll also want to install the openstack packages from the Cisco-Openstack-Mirror environment, which includes the current validated set of puppet modules (installed into /usr/share/puppet/modules):
 
-	apt-get install python-software-properties
-	add-apt-repository ppa:cisco-openstack-mirror/cisco
+	add-apt-repository -y ppa:cisco-openstack-mirror/cisco
 	apt-get update
 	apt-get install puppet-openstack-cisco
 
 Then you need to set up your site:
 
-	cp os-docs/examples/{site.pp,cobbler-node.pp} /etc/puppet/manifests/
+	cp ~/os-docs/examples/{site.pp,cobbler-node.pp} /etc/puppet/manifests/
 
 YOU MUST THEN EDIT THESE FILES.  They are fairly well documented, but please comment with questions. You can also read through these descriptions: [Cobbler Node](https://github.com/CiscoSystems/cisco-openstack-docs/blob/master/Cobbler-Node.md)  and [Site](https://github.com/CiscoSystems/cisco-openstack-docs/blob/master/Site.md)
 
@@ -68,7 +67,7 @@ I recommend a reboot at this point, as it seems that the puppetmaster doesn't re
 
 And now you should be able to load up your cobbled nodes:
 
-	os-docs/examples/clean_node.sh {node_name}
+	~/os-docs/examples/clean_node.sh {node_name}
 
 Testing OpenStack
 -----------------
