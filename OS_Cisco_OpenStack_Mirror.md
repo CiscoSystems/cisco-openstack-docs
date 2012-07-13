@@ -39,6 +39,8 @@ Once the node is built log in (localadmin:ubuntu are the default), and become ro
 
 	apt-get update && apt-get dist-upgrade -y
 
+Note: The system will need to be restarted after applying the updates.
+
 If you didn't install via the preseed file method, you'll need a couple additional packages:
 
 	apt-get install openssh-server lvm2 ntp puppet git rake ipmitool python-software-properties -y
