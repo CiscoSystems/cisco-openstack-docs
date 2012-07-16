@@ -46,7 +46,7 @@ node /cobbler-node/ {
   ntp_server => "192.168.100.1",
   late_command => '
 sed -e "/logdir/ a pluginsync=true" -i /target/etc/puppet/puppet.conf ; \
-sed -e "/logdir/ a server=$cobbler_node_ip" -i /target/etc/puppet/puppet.conf ; \
+sed -e "/logdir/ a server=<fqdn_of_your_puppet_master>" -i /target/etc/puppet/puppet.conf ; \
 sed -e "s/START=no/START=yes/" -i /target/etc/default/puppet ; \
 echo -e "server 192.168.99.1 iburst\nserver 5.ntp.esl.cisco.com\nserver 7.ntp.esl.cisco.com" > /target/etc/ntp.conf ; \
 echo "8021q" >> /target/etc/modules ; \
