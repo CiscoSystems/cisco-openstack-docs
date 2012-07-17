@@ -63,6 +63,7 @@ node /os-build/ inherits "cobbler-node" {
   class { puppet:
     run_master => true,
     puppetmaster_address => $::fqdn,
+    mysql_root_password => 'ubuntu',
     mysql_password => 'ubuntu',	
   }
 
