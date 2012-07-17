@@ -1,4 +1,6 @@
 #!/bin/bash
+# A simple script to rebuild nodes managed by cobbler and puppet.  Change the domain to the domain name of your environment.
+# Execute the script by path/to/script/clean_node.sh <cobbler_system_name>.  You can get the name from cobbler system list command.
 if [[ -n $2 ]]
   then domain=$2
   else domain="sdu.lab"
