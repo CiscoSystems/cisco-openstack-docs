@@ -66,9 +66,11 @@ if [ -d /root/os-docs ] ; then
         fi
 fi
 
-if ! run_cmd git clone https://github.com/CiscoSystems/cisco-openstack-docs /root/os-docs ; then
-  echo "Can't run git clone!"
-  exit 1
+if [ ! -d /root/os-docs ] ; then
+	if ! run_cmd git clone https://github.com/CiscoSystems/cisco-openstack-docs /root/os-docs ; then
+ 	  echo "Can't run git clone!"
+	  exit 1
+	fi
 fi
 
 echo "Copying manifests examples to manifest dir..."
