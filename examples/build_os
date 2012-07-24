@@ -59,8 +59,11 @@ fi
 
 echo "Cloning couchdb repository from github.com..."
 if [ -d /root/os-docs ] ; then
-	echo -e "Wait, did you already grab the code? Perhaps just try rerunning puppet:\n\n\tpuppet apply -v -d /etc/puppet/manifests/site.pp"
-	exit 1
+	echo -e "Looks like perhaps you ran this script before? We'll try to update your os-docs directory, just in case..."
+	if ! run_cmd (cd /root/os-docs; git pull) ; then
+	   echo 'That didn't work.  Perhaps rename your os-docs directory, and try again?'
+	   exit 1
+        fi
 fi
 
 if ! run_cmd git clone https://github.com/CiscoSystems/cisco-openstack-docs /root/os-docs ; then
