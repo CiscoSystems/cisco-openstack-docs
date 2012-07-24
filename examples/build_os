@@ -60,8 +60,8 @@ fi
 echo "Cloning couchdb repository from github.com..."
 if [ -d /root/os-docs ] ; then
 	echo -e "Looks like perhaps you ran this script before? We'll try to update your os-docs directory, just in case..."
-	if ! run_cmd (cd /root/os-docs; git pull) ; then
-	   echo 'That didn't work.  Perhaps rename your os-docs directory, and try again?'
+	if ! run_cmd '(cd /root/os-docs; git pull)' ; then
+	   echo "That did not work.  Perhaps rename your os-docs directory, and try again?"
 	   exit 1
         fi
 fi
