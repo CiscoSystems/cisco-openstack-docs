@@ -1,0 +1,95 @@
+#!/bin/bash
+# couchdb_setup by Robert Starmer is licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.
+
+set -o errexit
+
+usage() {
+cat <<EOF
+usage: $0 options
+
+OPTIONS:
+  -h           Show this message
+  -p           http proxy i.e. -p http://username:password@host:port/
+EOF
+}
+
+function run_cmd () {
+  if [ -z "$PROXY" ]; then
+    sudo $*
+  else
+    sudo env http_proxy=$PROXY $*
+  fi
+}
+
+APT_CONFIG="-o Acquire::http::No-Cache=True -o Acquire::BrokenProxy=true -o Acquire::Retries=3"
+
+if [ -n "$http_proxy" ]; then
+  if [ -z "$https_proxy" ]; then
+    echo "Please set https_proxy env variable."
+    exit 1
+  fi
+  PROXY=$http_proxy
+fi
+
+while getopts "h:p:" OPTION
+do
+  case $OPTION in
+    h)
+      usage
+      exit 1
+      ;;
+    p)
+      PROXY=$OPTARG
+      export http_proxy=$PROXY
+      export https_proxy=$PROXY
+  esac
+done
+
+echo -e "\n\nUpdated apt repository...\n\n"
+if ! run_cmd apt-get $APT_CONFIG update; then
+  echo "Can't update apt repository"
+  exit 1
+fi
+
+echo "Installing prerequisite apps: git, puppet, ipmitool, python-software-properties.."
+if ! run_cmd apt-get $APT_CONFIG install -qym git puppet ipmitool python-software-properties; then
+  echo "Can't install prerequisites!..."
+  exit 1
+fi
+
+echo "Cloning couchdb repository from github.com..."
+if [ -d /root/os-docs ] ; then
+	echo -e "Wait, did you already grab the code? Perhaps just try rerunning puppet:\n\n\tpuppet apply -v -d /etc/puppet/manifests/site.pp"
+	exit 1
+fi
+
+if ! run_cmd git clone https://github.com/CiscoSystems/cisco-openstack-docs /root/os-docs ; then
+  echo "Can't run git clone!"
+  exit 1
+
+echo "Copying manifests examples to manifest dir..."
+if ! run_cmd cp ~/os-docs/examples/{site.pp,cobbler-node.pp} /etc/puppet/manifests/ ;then
+  echo "Can't copy sample manifests!!!"
+  exit 1
+fi
+
+echo "Adding Cisco's OpenStack code and puppet manifest repository..."
+if ! run_cmd add-apt-repository -y ppa:cisco-openstack-mirror/cisco ; then
+  echo "couldn't install the repository"
+  exit 1
+fi
+
+echo -e "\n\nUpdated apt repository...\n\n"
+if ! run_cmd apt-get $APT_CONFIG update; then
+  echo "Can't update apt repository"
+  exit 1
+fi
+
+echo -e "\n\nInstalling variant of the puppet openstack manifests...\n\n"
+if ! run_cmd apt-get $APT_CONFIG update; then
+  echo "Can't update apt repository"
+  exit 1
+fi
+
+echo -e "\n\nSUCCESS!!!!\n\n Now, go edit you sample site and perhaps cobbler .pp files in /etc/puppet/manifests, and then run 'puppet apply -v /etc/puppet/manifests/site.pp"
+exit 0
