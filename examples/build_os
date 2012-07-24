@@ -92,8 +92,8 @@ if ! run_cmd apt-get $APT_CONFIG update; then
 fi
 
 echo -e "\n\nInstalling variant of the puppet openstack manifests...\n\n"
-if ! run_cmd apt-get $APT_CONFIG update; then
-  echo "Can't update apt repository"
+if ! run_cmd apt-get $APT_CONFIG install puppet-openstack-cisco; then
+  echo "Can't install puppet-openstack-cisco package..."
   exit 1
 fi
 
