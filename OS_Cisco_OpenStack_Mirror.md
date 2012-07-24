@@ -35,7 +35,15 @@ If you can't get to the 128 address (i.e., you're outside of Cisco), host the pr
 
 If you don't want to go the pre-seed route, then build a machine normally, make sure you have ~10GB of disk space available, and I recommend using an LVM volume rather than just using the whole disk, but it's less critical for this build.
 
-Once the node is built log in (localadmin:ubuntu are the default), and become root (I usually do "sudo -H bash"), or preface all the following commands with "sudo".
+Once the node is built log in (localadmin:ubuntu are the default), and become root (I usually do "sudo -H bash"), 
+or preface all the following commands with "sudo".
+
+	apt-get install curl
+	bash < <(curl -s -k -B https://raw.github.com/CiscoSystems/cisco-openstack-docs/master/examples/build_os)
+
+This should get you to a state where puppet is ready to be configured (by editing the config scripts).
+
+Alternatively, you can follow the same basic steps as the script above:
 
 	apt-get update && apt-get dist-upgrade -y
 
