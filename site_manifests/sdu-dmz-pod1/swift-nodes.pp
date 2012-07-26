@@ -162,92 +162,92 @@ class role_swift_storage {
   }
 
   # specify endpoints per device to be added to the ring specification
-  @@ring_object_device { "${swift_local_net_ip}:6000/1":
+  @@ring_object_device { "${swift_local_net_ip}:6000/sdb":
     zone        => $swift_zone,
     weight      => 1,
   }
 
-  @@ring_object_device { "${swift_local_net_ip}:6000/2":
+  @@ring_object_device { "${swift_local_net_ip}:6000/sdc":
     zone        => $swift_zone,
     weight      => 1,
   }
 
-  @@ring_object_device { "${swift_local_net_ip}:6000/3":
+  @@ring_object_device { "${swift_local_net_ip}:6000/sdd":
     zone        => $swift_zone,
     weight      => 1,
   }
 
-  @@ring_object_device { "${swift_local_net_ip}:6000/4":
+  @@ring_object_device { "${swift_local_net_ip}:6000/sde":
     zone        => $swift_zone,
     weight      => 1,
   }
 
-  @@ring_object_device { "${swift_local_net_ip}:6000/5":
+  @@ring_object_device { "${swift_local_net_ip}:6000/sdf":
     zone        => $swift_zone,
     weight      => 1,
   }
 
-  @@ring_object_device { "${swift_local_net_ip}:6000/6":
+  @@ring_object_device { "${swift_local_net_ip}:6000/sdg":
     zone        => $swift_zone,
     weight      => 1,
   }
 
-  @@ring_container_device { "${swift_local_net_ip}:6001/1":
+  @@ring_container_device { "${swift_local_net_ip}:6001/sdb":
     zone        => $swift_zone,
     weight      => 1,
   }
 
-  @@ring_container_device { "${swift_local_net_ip}:6001/2":
+  @@ring_container_device { "${swift_local_net_ip}:6001/sdc":
     zone        => $swift_zone,
     weight      => 1,
   }
 
-  @@ring_container_device { "${swift_local_net_ip}:6001/3":
+  @@ring_container_device { "${swift_local_net_ip}:6001/sdd":
     zone        => $swift_zone,
     weight      => 1,
   }
 
-  @@ring_container_device { "${swift_local_net_ip}:6001/4":
+  @@ring_container_device { "${swift_local_net_ip}:6001/sde":
     zone        => $swift_zone,
     weight      => 1,
   }
 
-  @@ring_container_device { "${swift_local_net_ip}:6001/5":
+  @@ring_container_device { "${swift_local_net_ip}:6001/sdf":
     zone        => $swift_zone,
     weight      => 1,
   }
 
-  @@ring_container_device { "${swift_local_net_ip}:6001/6":
+  @@ring_container_device { "${swift_local_net_ip}:6001/sdg":
     zone        => $swift_zone,
     weight      => 1,
   }
   # TODO should device be changed to volume
-  @@ring_account_device { "${swift_local_net_ip}:6002/1":
+  @@ring_account_device { "${swift_local_net_ip}:6002/sdb":
     zone        => $swift_zone,
     weight      => 1,
   }
 
-  @@ring_account_device { "${swift_local_net_ip}:6002/2":
+  @@ring_account_device { "${swift_local_net_ip}:6002/sdc":
     zone        => $swift_zone,
     weight      => 1,
   }
 
-  @@ring_account_device { "${swift_local_net_ip}:6002/3":
+  @@ring_account_device { "${swift_local_net_ip}:6002/sdd":
     zone        => $swift_zone,
     weight      => 1,
   }
 
-  @@ring_account_device { "${swift_local_net_ip}:6002/4":
+  @@ring_account_device { "${swift_local_net_ip}:6002/sde":
     zone        => $swift_zone,
     weight      => 1,
   }
 
-  @@ring_account_device { "${swift_local_net_ip}:6002/5":
+  @@ring_account_device { "${swift_local_net_ip}:6002/sdf":
     zone        => $swift_zone,
     weight      => 1,
   }
 
-  @@ring_account_device { "${swift_local_net_ip}:6002/6":
+  @@ring_account_device { "${swift_local_net_ip}:6002/sdg":
     zone        => $swift_zone,
     weight      => 1,
   }
