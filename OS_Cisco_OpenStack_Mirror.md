@@ -53,15 +53,25 @@ If you didn't install via the preseed file method, you'll need a couple addition
 
 	apt-get install openssh-server lvm2 ntp puppet git rake ipmitool python-software-properties -y
 
-After that completes, we can grab the code to automate the most of the rest of the build:
-
-	git clone https://github.com/CiscoSystems/cisco-openstack-docs ~/os-docs
-
 We'll also want to install the openstack packages from the Cisco-Openstack-Mirror environment, which includes the current validated set of puppet modules (installed into /usr/share/puppet/modules):
 
 	add-apt-repository -y ppa:cisco-openstack-mirror/cisco
 	apt-get update
-	apt-get install puppet-openstack-cisco
+	apt-get install puppet-openstack-cisco 
+
+Optionally, you can install the following packages.
+
+Documentation:
+
+	apt-get install cisco-openstack-docs
+
+Utilities:
+
+	apt-get install cisco-openstack-utils
+
+If your cisco-openstack-docs package does not include a sample site.pp and cobbler-node.pp, then pull cisco-openstack-docs directly from the Github repository:
+
+	git clone https://github.com/CiscoSystems/cisco-openstack-docs ~/os-docs
 
 Then you need to set up your site:
 
