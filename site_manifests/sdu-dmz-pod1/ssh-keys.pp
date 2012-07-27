@@ -16,3 +16,4 @@ file { 'authorized_keys':
  require => File['ssh_root_path'],
  source => 'puppet:///files/authorized_keys',
 }
+

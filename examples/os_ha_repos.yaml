@@ -1,0 +1,14 @@
+modulepath: /usr/share/puppet/modules
+repos:
+  repo_paths:
+    # openstack git repos
+    # swift deps
+    https://github.com/ghoneycutt/puppet-xinetd: xinetd
+    # ha deps
+    https://github.com/branan/puppet-drbd: drbd
+    https://github.com/branan/puppetlabs-corosync: corosync
+    https://github.com/branan/puppet-openstack_admin: openstack_admin
+  checkout_branches:
+#  keystone: dev
+#  glance: dev
+#    nova: dev

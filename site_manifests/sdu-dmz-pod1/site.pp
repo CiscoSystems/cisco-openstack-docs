@@ -1,4 +1,3 @@
-#
 # This document serves as an example of how to deploy
 # basic single and multi-node openstack environments.
 #
@@ -9,15 +8,19 @@ class { 'openstack::test_file': }
 class { 'apt': }
 # Grab the Cisco-Openstack-Mirror code
 # This assumes you installed the puppet code from the same mirror.
-openstack::apt{"cisco-repo":
-  location => 'ppa:cisco-openstack-mirror/cisco-proposed',
-  key => '3BEFA739',
-  key_source => 'hkp://keyserver.ubuntu.com:80/',
-}
+#openstack::apt{"cisco-repo":
+#  location => 'ppa:cisco-openstack-mirror/cisco-proposed',
+#  key => '3BEFA739',
+#  key_source => 'hkp://keyserver.ubuntu.com:80/',
+#}
+apt::ppa { 'ppa:cisco-openstack-mirror/cisco-proposed': }
+apt::ppa { 'ppa:cisco-openstack-mirror/cisco': }
+
+Apt::Ppa['ppa:cisco-openstack-mirror/cisco-proposed'] -> Package<| title != 'python-software-properties' |>
+Apt::Ppa['ppa:cisco-openstack-mirror/cisco'] -> Package<| title != 'python-software-properties' |>
+
 
 ####### shared variables ##################
-
-
 # this section is used to specify global variables that will
 # be used in the deployment of multi and single node openstack
 # environments
@@ -45,6 +48,51 @@ $floating_ip_range       = '192.168.200.96/27'
 $verbose                 = 'false'
 # by default it does not enable atomatically adding floating IPs
 $auto_assign_floating_ip = true
+# Switch this to false after your first run to prevent unsafe operations
+# from potentially running again
+$initial_setup           = false
+#### end shared variables #################
+
+# multi-node specific parameters
+
+# The address services will attempt to connect to the controller with
+$controller_node_address       = '192.168.200.40'
+$controller_node_public        = $controller_node_address
+$controller_node_internal      = $controller_node_address
+
+# The hostname other nova nodes see the controller as
+$controller_hostname           = 'control'
+
+# The actual address of the primary/active controller
+$controller_node_primary       = '192.168.200.41'
+$controller_hostname_primary   = 'control01'
+
+# The actual address of the secondary/passive controller
+$controller_node_secondary     = '192.168.200.42'
+$controller_hostname_secondary = 'control02'
+
+# The bind address for corosync. Should match the subnet the controller
+# nodes use for the actual IP addresses
+$controller_node_network       = '192.168.200.0'
+
+$sql_connection = "mysql://nova:${nova_db_password}@${controller_node_address}/nova"
+
+# /etc/hosts entries for the controller nodes
+host { $controller_hostname_primary:
+  ip => $controller_node_primary
+}
+host { $controller_hostname_secondary:
+  ip => $controller_node_secondary
+}
+host { $controller_hostname:
+  ip => $controller_node_internal
+}
+####
+# Active and passive nodes are mostly configured identically.
+# There are only two places where the configuration is different:
+# whether openstack::controller is flagged as enabled, and whether
+# $ha_primary is set to true on openstack_admin::controller::ha
+####
 
 # include and load swift config and node definitions:
 import 'swift-nodes'
@@ -55,72 +103,7 @@ import 'cobbler-node'
 # expot an authhorized keys file to the root user of all nodes.
 # This is most useful for testing.
 import 'ssh-keys'
-
-#### end shared variables #################
-
-
-node /build-os/ inherits "cobbler-node" {
-
-#change the servers for your NTP environment
-  class { ntp:
-    servers => [ "192.168.200.1"],
-    ensure => running,
-    autoupdate => true,
-  }
-
-# set up a local apt cache.  Eventually this may become a local mirror/repo instead
-  class { apt-cacher-ng:
-    }
-
-# set the right local puppet environment up.  This builds puppetmaster with storedconfigs (a nd a local mysql instance)
-  class { puppet:
-    run_master => true,
-    puppetmaster_address => $::fqdn,
-    certname => 'build-os.cc.lab',
-    mysql_password => 'ubuntu',	
-  }<-
-  file {'/etc/puppet/files':
-    ensure => directory,
-    owner => 'root',
-    group => 'root',
-    mode => '0755',
-  }
-  
-  file {'/etc/puppet/fileserver.conf':
-    ensure => file,
-    owner => 'root',
-    group => 'root',
-    mode => '0644',
-    content => '
-# This file consists of arbitrarily named sections/modules
-# defining where files are served from and to whom
-
-# Define a section "files"
-# Adapt the allow/deny settings to your needs. Order
-# for allow/deny does not matter, allow always takes precedence
-# over deny
-[files]
-  path /etc/puppet/files
-  allow *
-#  allow *.example.com
-#  deny *.evil.example.com
-#  allow 192.168.0.0/24
-
-[plugins]
-#  allow *.example.com
-#  deny *.evil.example.com
-#  allow 192.168.0.0/24
-',
-  }
-
-}
-
-$controller_node_address  = '192.168.200.41'
-
-$controller_node_public   = $controller_node_address
-$controller_node_internal = $controller_node_address
-$sql_connection         = "mysql://nova:${nova_db_password}@${controller_node_internal}/nova"
-
+import 'clean-disk'
 #Common configuration for all node compute, controller, storage but puppet-master/cobbler
 node base {
   #class { 'collectd':
@@ -130,6 +113,12 @@ node base {
 node /control01/ inherits base {
 
 #import "tempest_add"
+# create DRBD logical volume.
+  logical_volume { 'drbd-openstack':
+    ensure       => present,
+    volume_group => 'nova-volumes',
+    size         => '100G',
+  }
 
 #change the servers for your NTP environment
  class { ntp:
@@ -146,7 +135,7 @@ node /control01/ inherits base {
     floating_range          => $floating_ip_range,
     fixed_range             => $fixed_network_range,
     # by default it does not enable multi-host mode
-    multi_host              => true,
+    multi_host              => $multi_host,
     # by default is assumes flat dhcp networking mode
     network_manager         => 'nova.network.manager.FlatDHCPManager',
     verbose                 => $verbose,
@@ -162,16 +151,34 @@ node /control01/ inherits base {
     nova_user_password      => $nova_user_password,
     rabbit_password         => $rabbit_password,
     rabbit_user             => $rabbit_user,
-    export_resources        => true,
+    export_resources        => false,
+    enabled                 => true, #different between active and passive.
   }
-
 
   class { 'openstack::auth_file':
     admin_password       => $admin_password,
     keystone_admin_token => $keystone_admin_token,
     controller_node      => $controller_node_internal,
   }
-  
+
+  class { 'openstack_admin::controller::ha':
+    public_address      => $controller_node_public,
+    public_interface    => $public_interface,
+    internal_address    => $controller_node_internal,
+    internal_interface  => $public_interface,
+    primary_hostname    => $controller_hostname_primary,
+    secondary_hostname  => $controller_hostname_secondary,
+    controller_hostname => $controller_hostname,
+    primary_address     => $controller_node_primary,
+    secondary_address   => $controller_node_secondary,
+    ha_primary          => true, # Different between active and passive
+    volume_group        => 'nova-volumes',
+    logical_volume      => 'drbd-openstack',
+    corosync_address    => $controller_node_network,
+    multi_host          => $multi_host,
+    corosync_unicast    => $corosync_unicast,
+    initial_setup       => $initial_setup,
+  }
 
 # configure the keystone service user and endpoint
   class { 'swift::keystone::auth':
@@ -180,6 +187,84 @@ node /control01/ inherits base {
     address  => $swift_proxy_address,
   }
 
+}
+
+node /control02/ inherits base {
+
+#import "tempest_add"
+# create DRBD logical volume.
+  logical_volume { 'drbd-openstack':
+    ensure       => present,
+    volume_group => 'nova-volumes',
+    size         => '100G',
+  }
+
+#change the servers for your NTP environment
+ class { ntp:
+    servers => [ "192.168.200.1" ],
+    ensure => running,
+    autoupdate => true,
+  }
+
+  class { 'openstack::controller':
+    public_address          => $controller_node_public,
+    public_interface        => $public_interface,
+    private_interface       => $private_interface,
+    internal_address        => $controller_node_internal,
+    floating_range          => $floating_ip_range,
+    fixed_range             => $fixed_network_range,
+    # by default it does not enable multi-host mode
+    multi_host              => $multi_host,
+    # by default is assumes flat dhcp networking mode
+    network_manager         => 'nova.network.manager.FlatDHCPManager',
+    verbose                 => $verbose,
+    auto_assign_floating_ip => $auto_assign_floating_ip,
+    mysql_root_password     => $mysql_root_password,
+    admin_email             => $admin_email,
+    admin_password          => $admin_password,
+    keystone_db_password    => $keystone_db_password,
+    keystone_admin_token    => $keystone_admin_token,
+    glance_db_password      => $glance_db_password,
+    glance_user_password    => $glance_user_password,
+    nova_db_password        => $nova_db_password,
+    nova_user_password      => $nova_user_password,
+    rabbit_password         => $rabbit_password,
+    rabbit_user             => $rabbit_user,
+    export_resources        => false,
+    enabled                 => false, #different between active and passive.
+  }
+
+  class { 'openstack::auth_file':
+    admin_password       => $admin_password,
+    keystone_admin_token => $keystone_admin_token,
+    controller_node      => $controller_node_internal,
+  }
+
+  class { 'openstack_admin::controller::ha':
+    public_address      => $controller_node_public,
+    public_interface    => $public_interface,
+    internal_address    => $controller_node_internal,
+    internal_interface  => $public_interface,
+    primary_hostname    => $controller_hostname_primary,
+    secondary_hostname  => $controller_hostname_secondary,
+    controller_hostname => $controller_hostname,
+    primary_address     => $controller_node_primary,
+    secondary_address   => $controller_node_secondary,
+    ha_primary          => false, # Different between active and passive
+    volume_group        => 'nova-volumes',
+    logical_volume      => 'drbd-openstack',
+    corosync_address    => $controller_node_network,
+    multi_host          => $multi_host,
+    corosync_unicast    => $corosync_unicast,
+    initial_setup       => $initial_setup,
+  }
+
+# configure the keystone service user and endpoint
+  class { 'swift::keystone::auth':
+    auth_name => $swift_user,
+    password => $swift_user_password,
+    address  => $swift_proxy_address,
+  }
 }
 
 node /compute0/ inherits base {
