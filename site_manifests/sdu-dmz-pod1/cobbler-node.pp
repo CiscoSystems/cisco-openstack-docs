@@ -88,10 +88,10 @@ cobbler::node { "control02":
  }
 
 # Currently in use as the build node.
-#cobbler::node { "compute01":
+#cobbler::node { "build-os":
 # mac => "A4:4C:11:13:98:21",
 # profile => "precise-x86_64-auto",
-# ip => "192.168.200.20",
+# ip => "192.168.200.254",
 # domain => "cc.lab",
 # preseed => "/etc/cobbler/preseeds/cisco-preseed",
 # power_address => "192.168.200.4",
@@ -100,10 +100,10 @@ cobbler::node { "control02":
 #  power_password => "password",
 # }
 
-cobbler::node { "compute02":
+cobbler::node { "compute01":
  mac => "A4:4C:11:13:64:4A",
  profile => "precise-x86_64-auto",
- ip => "192.168.200.21",
+ ip => "192.168.200.20",
  domain => "cc.lab",
  preseed => "/etc/cobbler/preseeds/cisco-preseed",
  power_address => "192.168.200.5",
@@ -112,10 +112,10 @@ cobbler::node { "compute02":
  power_password => "password",
  }
 
-cobbler::node { "swiftproxy01":
+cobbler::node { "compute02":
  mac => "E8:B7:48:4D:CB:17",
  profile => "precise-x86_64-auto",
- ip => "192.168.200.50",
+ ip => "192.168.200.21",
  domain => "cc.lab",
  preseed => "/etc/cobbler/preseeds/cisco-preseed",
  power_address => "192.168.200.6",
@@ -124,10 +124,10 @@ cobbler::node { "swiftproxy01":
  power_password => "password",
  }
 
-cobbler::node { "swift01":
+cobbler::node { "compute03":
  mac => "A4:4C:11:13:57:71",
  profile => "precise-x86_64-auto",
- ip => "192.168.200.30",
+ ip => "192.168.200.22",
  domain => "cc.lab",
  preseed => "/etc/cobbler/preseeds/cisco-preseed",
  power_address => "192.168.200.7",
@@ -136,10 +136,10 @@ cobbler::node { "swift01":
  power_password => "password",
  }
 
-cobbler::node { "swift02":
+cobbler::node { "compute04":
  mac => "A4:4C:11:13:9C:E4",
  profile => "precise-x86_64-auto",
- ip => "192.168.200.31",
+ ip => "192.168.200.23",
  domain => "cc.lab",
  preseed => "/etc/cobbler/preseeds/cisco-preseed",
  power_address => "192.168.200.8",
@@ -147,11 +147,10 @@ cobbler::node { "swift02":
  power_user => "admin",
  power_password => "password",
  }
-
-cobbler::node { "swift03":
+cobbler::node { "swiftproxy01":
  mac => "A4:4C:11:13:93:FF",
  profile => "precise-x86_64-auto",
- ip => "192.168.200.32",
+ ip => "192.168.200.50",
  domain => "cc.lab",
  preseed => "/etc/cobbler/preseeds/cisco-preseed",
  power_address => "192.168.200.9",
@@ -159,6 +158,40 @@ cobbler::node { "swift03":
  power_user => "admin",
  power_password => "password",
  }
+cobbler::node { "swift01":
+ mac => "A4:4C:11:13:C1:8C",
+ profile => "precise-x86_64-auto",
+ ip => "192.168.200.30",
+ domain => "cc.lab",
+ preseed => "/etc/cobbler/preseeds/cisco-preseed",
+ power_address => "192.168.200.10",
+ power_type => "ipmitool",
+ power_user => "admin",
+ power_password => "password",
+ }
+cobbler::node { "swift02":
+ mac => "A4:4C:11:13:C7:35",
+ profile => "precise-x86_64-auto",
+ ip => "192.168.200.31",
+ domain => "cc.lab",
+ preseed => "/etc/cobbler/preseeds/cisco-preseed",
+ power_address => "192.168.200.11",
+ power_type => "ipmitool",
+ power_user => "admin",
+ power_password => "password",
+ }
+cobbler::node { "swift03":
+ mac => "A4:4C:11:13:AC:86",
+ profile => "precise-x86_64-auto",
+ ip => "192.168.200.32",
+ domain => "cc.lab",
+ preseed => "/etc/cobbler/preseeds/cisco-preseed",
+ power_address => "192.168.200.12",
+ power_type => "ipmitool",
+ power_user => "admin",
+ power_password => "password",
+ }
 
 # Repeat as necessary.
 }
+

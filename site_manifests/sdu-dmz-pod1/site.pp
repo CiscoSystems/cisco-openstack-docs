@@ -2,6 +2,10 @@
 # basic single and multi-node openstack environments.
 #
 
+# Switch this to false after your first run to prevent unsafe operations
+# from potentially running again
+$initial_setup           = false
+
 # deploy a script that can be used to test nova
 class { 'openstack::test_file': }
 # Load apt prerequisites.  This is only valid on Ubuntu systmes
@@ -24,7 +28,7 @@ Apt::Ppa['ppa:cisco-openstack-mirror/cisco'] -> Package<| title != 'python-softw
 # this section is used to specify global variables that will
 # be used in the deployment of multi and single node openstack
 # environments
-
+$multi_host		= true
 # assumes that eth0 is the public interface
 $public_interface        = 'eth0'
 # assumes that eth1 is the interface that will be used for the vm network
@@ -48,9 +52,6 @@ $floating_ip_range       = '192.168.200.96/27'
 $verbose                 = 'false'
 # by default it does not enable atomatically adding floating IPs
 $auto_assign_floating_ip = true
-# Switch this to false after your first run to prevent unsafe operations
-# from potentially running again
-$initial_setup           = false
 #### end shared variables #################
 
 # multi-node specific parameters
@@ -103,28 +104,28 @@ import 'cobbler-node'
 # expot an authhorized keys file to the root user of all nodes.
 # This is most useful for testing.
 import 'ssh-keys'
-import 'clean-disk'
+#import 'clean-disk'
 #Common configuration for all node compute, controller, storage but puppet-master/cobbler
 node base {
-  #class { 'collectd':
-  #}
+ class { ntp:
+    servers => [ "192.168.200.1" ],
+    ensure => running,
+    autoupdate => true,
+  }
+
+  class { 'collectd':
+  }
 }
 
 node /control01/ inherits base {
 
+import "glance_import"
 #import "tempest_add"
 # create DRBD logical volume.
   logical_volume { 'drbd-openstack':
     ensure       => present,
     volume_group => 'nova-volumes',
     size         => '100G',
-  }
-
-#change the servers for your NTP environment
- class { ntp:
-    servers => [ "192.168.200.1" ],
-    ensure => running,
-    autoupdate => true,
   }
 
   class { 'openstack::controller':
@@ -199,13 +200,6 @@ node /control02/ inherits base {
     size         => '100G',
   }
 
-#change the servers for your NTP environment
- class { ntp:
-    servers => [ "192.168.200.1" ],
-    ensure => running,
-    autoupdate => true,
-  }
-
   class { 'openstack::controller':
     public_address          => $controller_node_public,
     public_interface        => $public_interface,
@@ -265,16 +259,10 @@ node /control02/ inherits base {
     password => $swift_user_password,
     address  => $swift_proxy_address,
   }
+ 
 }
 
 node /compute0/ inherits base {
-
-#change the servers for your NTP environment
-  class { ntp:
-    servers => [ "3.ntp.esl.cisco.com", "5.ntp.esl.cisco.com", "7.ntp.esl.cisco.com", ],
-    ensure => running,
-    autoupdate => true,
-  }
 
   class { 'openstack::auth_file':
     admin_password       => $admin_password,
@@ -291,7 +279,7 @@ node /compute0/ inherits base {
     libvirt_type       => 'kvm',
     fixed_range        => $fixed_network_range,
     network_manager    => 'nova.network.manager.FlatDHCPManager',
-    multi_host         => true,
+    multi_host         => $multi_host,
     sql_connection     => $sql_connection,
     nova_user_password => $nova_user_password,
     rabbit_host        => $controller_node_internal,
@@ -307,6 +295,63 @@ node /compute0/ inherits base {
 
 }
 
+node /build-os/ inherits "cobbler-node" {
+ 
+  #import "glance_download"
+
+#change the servers for your NTP environment
+  class { ntp:
+    servers => [ "192.168.200.1"],
+    ensure => running,
+    autoupdate => true,
+  }
+
+# set up a local apt cache.  Eventually this may become a local mirror/repo instead
+  class { apt-cacher-ng:
+    }
+
+# set the right local puppet environment up.  This builds puppetmaster with storedconfigs (a nd a local mysql instance)
+  class { puppet:
+    run_master => true,
+    puppetmaster_address => $::fqdn,
+    certname => 'build-os.cc.lab',
+    mysql_password => 'ubuntu',
+  }<-
+  file {'/etc/puppet/files':
+    ensure => directory,
+    owner => 'root',
+    group => 'root',
+    mode => '0755',
+  }
+
+  file {'/etc/puppet/fileserver.conf':
+    ensure => file,
+    owner => 'root',
+    group => 'root',
+    mode => '0644',
+    content => '
+# This file consists of arbitrarily named sections/modules
+# defining where files are served from and to whom
+
+# Define a section "files"
+# Adapt the allow/deny settings to your needs. Order
+# for allow/deny does not matter, allow always takes precedence
+# over deny
+[files]
+  path /etc/puppet/files
+  allow *
+#  allow *.example.com
+#  deny *.evil.example.com
+#  allow 192.168.0.0/24
+
+[plugins]
+#  allow *.example.com
+#  deny *.evil.example.com
+#  allow 192.168.0.0/24
+',
+  }
+
+}
 node default {
   notify{"Default Node: Perhaps add a node definition to site.pp": }
 }
