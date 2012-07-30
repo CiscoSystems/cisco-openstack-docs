@@ -6,7 +6,7 @@ $os_username = 'admin'
 $os_password = 'Cisco123'
 $os_auth_url = "http://192.168.200.40:5000/v2.0/"
 
-exec {"glance add -T ${os_tenant} -N ${os_auth_url} -K ${os_password} -I ${os_username} name=${release} is_public=true disk_format='qcow2' container_format='ovf' copy_from=${image_uri}":
+exec {"glance add -T ${os_tenant} -N ${os_auth_url} -K ${os_password} -I ${os_username} name=${release} is_public=true disk_format='qcow2' container_format='bare' copy_from=${image_uri}":
   path => ['/bin','/usr/bin'],
   cwd => '/var/www',
   unless => "glance -T ${os_tenant} -N ${os_auth_url} -K ${os_password} -I ${os_username} index | grep ${release} 2>/dev/null",

@@ -31,7 +31,7 @@ $swift_user_password  = 'swift_pass'
 $swift_shared_secret  = 'Gdr8ny7YyWqy2'
 $swift_local_net_ip   = $ipaddress_eth0
 
-$swift_proxy_address    = '192.168.200.50'
+#$swift_proxy_address    = '192.168.200.50'
 
 
 # configurations that need to be applied to all swift nodes
@@ -129,14 +129,6 @@ class swift-ucs-disk {
     size => $size
   }
 
-  swift::storage::disk { 'sdg':
-    device => "sdg",
-    mnt_base_dir => $mnt_base_dir,
-    byte_size => $byte_size,
-    size => $size
-  }
-
-
 
   #filesystem { '/dev/mapper/nova--volumes-swift--lv--2':
   # ensure => present,
@@ -187,11 +179,6 @@ class role_swift_storage {
     weight      => 1,
   }
 
-  @@ring_object_device { "${swift_local_net_ip}:6000/sdg":
-    zone        => $swift_zone,
-    weight      => 1,
-  }
-
   @@ring_container_device { "${swift_local_net_ip}:6001/sdb":
     zone        => $swift_zone,
     weight      => 1,
@@ -217,10 +204,6 @@ class role_swift_storage {
     weight      => 1,
   }
 
-  @@ring_container_device { "${swift_local_net_ip}:6001/sdg":
-    zone        => $swift_zone,
-    weight      => 1,
-  }
   # TODO should device be changed to volume
   @@ring_account_device { "${swift_local_net_ip}:6002/sdb":
     zone        => $swift_zone,
@@ -243,11 +226,6 @@ class role_swift_storage {
   }
 
   @@ring_account_device { "${swift_local_net_ip}:6002/sdf":
-    zone        => $swift_zone,
-    weight      => 1,
-  }
-
-  @@ring_account_device { "${swift_local_net_ip}:6002/sdg":
     zone        => $swift_zone,
     weight      => 1,
   }

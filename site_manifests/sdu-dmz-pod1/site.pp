@@ -4,7 +4,8 @@
 
 # Switch this to false after your first run to prevent unsafe operations
 # from potentially running again
-$initial_setup           = false
+$initial_setup           = true
+
 
 # deploy a script that can be used to test nova
 class { 'openstack::test_file': }
@@ -17,6 +18,7 @@ class { 'apt': }
 #  key => '3BEFA739',
 #  key_source => 'hkp://keyserver.ubuntu.com:80/',
 #}
+
 apt::ppa { 'ppa:cisco-openstack-mirror/cisco-proposed': }
 apt::ppa { 'ppa:cisco-openstack-mirror/cisco': }
 
@@ -29,6 +31,9 @@ Apt::Ppa['ppa:cisco-openstack-mirror/cisco'] -> Package<| title != 'python-softw
 # be used in the deployment of multi and single node openstack
 # environments
 $multi_host		= true
+# By default, corosync uses multicasting. It is possible to disable
+# this if your environment require it
+$corosync_unicast        = true
 # assumes that eth0 is the public interface
 $public_interface        = 'eth0'
 # assumes that eth1 is the interface that will be used for the vm network
@@ -44,6 +49,7 @@ $nova_db_password        = 'nova_pass'
 $nova_user_password      = 'nova_pass'
 $glance_db_password      = 'glance_pass'
 $glance_user_password    = 'glance_pass'
+$glance_on_swift         = 'true'
 $rabbit_password         = 'openstack_rabbit_password'
 $rabbit_user             = 'openstack_rabbit_user'
 $fixed_network_range     = '10.0.0.0/24'
@@ -52,6 +58,8 @@ $floating_ip_range       = '192.168.200.96/27'
 $verbose                 = 'false'
 # by default it does not enable atomatically adding floating IPs
 $auto_assign_floating_ip = true
+# Swift addresses:
+$swift_proxy_address    = '192.168.200.50'
 #### end shared variables #################
 
 # multi-node specific parameters
@@ -104,7 +112,7 @@ import 'cobbler-node'
 # expot an authhorized keys file to the root user of all nodes.
 # This is most useful for testing.
 import 'ssh-keys'
-#import 'clean-disk'
+import 'clean-disk'
 #Common configuration for all node compute, controller, storage but puppet-master/cobbler
 node base {
  class { ntp:
@@ -112,20 +120,22 @@ node base {
     ensure => running,
     autoupdate => true,
   }
+}
 
-  class { 'collectd':
-  }
+node compute_base inherits base {
+#  class { 'collectd':
+#  }
 }
 
 node /control01/ inherits base {
 
-import "glance_import"
+#import "glance_import"
 #import "tempest_add"
 # create DRBD logical volume.
   logical_volume { 'drbd-openstack':
     ensure       => present,
     volume_group => 'nova-volumes',
-    size         => '100G',
+    size         => '1G',
   }
 
   class { 'openstack::controller':
@@ -148,6 +158,7 @@ import "glance_import"
     keystone_admin_token    => $keystone_admin_token,
     glance_db_password      => $glance_db_password,
     glance_user_password    => $glance_user_password,
+    glance_on_swift         => $glance_on_swift,
     nova_db_password        => $nova_db_password,
     nova_user_password      => $nova_user_password,
     rabbit_password         => $rabbit_password,
@@ -197,7 +208,7 @@ node /control02/ inherits base {
   logical_volume { 'drbd-openstack':
     ensure       => present,
     volume_group => 'nova-volumes',
-    size         => '100G',
+    size         => '1G',
   }
 
   class { 'openstack::controller':
@@ -220,6 +231,7 @@ node /control02/ inherits base {
     keystone_admin_token    => $keystone_admin_token,
     glance_db_password      => $glance_db_password,
     glance_user_password    => $glance_user_password,
+    glance_on_swift         => $glance_on_swift,
     nova_db_password        => $nova_db_password,
     nova_user_password      => $nova_user_password,
     rabbit_password         => $rabbit_password,
@@ -254,15 +266,15 @@ node /control02/ inherits base {
   }
 
 # configure the keystone service user and endpoint
-  class { 'swift::keystone::auth':
-    auth_name => $swift_user,
-    password => $swift_user_password,
-    address  => $swift_proxy_address,
-  }
+#  class { 'swift::keystone::auth':
+#    auth_name => $swift_user,
+#    password => $swift_user_password,
+#    address  => $swift_proxy_address,
+#  }
  
 }
 
-node /compute0/ inherits base {
+node /compute0/ inherits compute_base {
 
   class { 'openstack::auth_file':
     admin_password       => $admin_password,
@@ -290,7 +302,7 @@ node /compute0/ inherits base {
     vnc_enabled        => 'true',
     verbose            => $verbose,
     manage_volumes     => true,
-    nova_volume        => 'nova-volumes'
+    nova_volume        => 'nova-volumes',
   }
 
 }

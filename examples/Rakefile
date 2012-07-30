@@ -7,7 +7,7 @@
 
 require 'puppet'
 
-repo_file = 'os_cobbler_repos.yaml'
+repo_file = 'os.yaml'
 default_modulepath = '/etc/puppet/modules'
 
 namespace :modules do

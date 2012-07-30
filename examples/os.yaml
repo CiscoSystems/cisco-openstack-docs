@@ -1,0 +1,37 @@
+modulepath: /usr/share/puppet/modules
+repos:
+  repo_paths:
+    https://github.com/puppetlabs/puppetlabs-openstack: openstack
+    # openstack git repos
+    https://github.com/puppetlabs/puppetlabs-nova: nova
+    https://github.com/puppetlabs/puppetlabs-glance: glance
+    https://github.com/puppetlabs/puppetlabs-swift: swift
+    https://github.com/puppetlabs/puppetlabs-keystone: keystone
+    https://github.com/puppetlabs/puppetlabs-horizon: horizon
+    # openstack middleware
+    https://github.com/puppetlabs/puppetlabs-rabbitmq: rabbitmq
+    https://github.com/puppetlabs/puppetlabs-mysql: mysql
+    https://github.com/puppetlabs/puppetlabs-git: git
+    https://github.com/puppetlabs/puppetlabs-vcsrepo: vcsrepo
+    https://github.com/saz/puppet-memcached: memcached
+    https://github.com/puppetlabs/puppetlabs-rsync: rsync
+    # other deps
+    https://github.com/ghoneycutt/puppet-xinetd: xinetd
+    https://github.com/saz/puppet-ssh: ssh
+    https://github.com/puppetlabs/puppetlabs-stdlib: stdlib
+    https://github.com/puppetlabs/puppetlabs-apt: apt
+    https://github.com/ripienaar/puppet-concat: concat
+    https://github.com/duritong/puppet-sysctl.git: sysctl
+    # cisco deps
+    https://github.com/CiscoSystems/puppet-puppet: puppet
+    https://github.com/CiscoSystems/puppet-cobbler: cobbler
+    https://github.com/CiscoSystems/puppet-apt-cacher-ng: apt-cacher-ng
+    https://github.com/puppetlabs/puppetlabs-ntp: ntp
+    https://github.com/CiscoSystems/puppetlabs-lvm: lvm
+    https://github.com/CiscoSystems/puppet-horizion-branding: branding
+    https://github.com/CiscoSystems/puppet-collectd : collectd
+    https://github.com/CiscoSystems/puppet-snmpd : snmpd
+    # ha deps
+    https://github.com/branan/puppet-drbd: drbd
+    https://github.com/branan/puppetlabs-corosync: corosync
+    https://github.com/branan/puppet-openstack_admin: openstack_admin
