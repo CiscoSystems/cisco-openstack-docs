@@ -7,6 +7,15 @@
 class { 'openstack::test_file': }
 # Load apt prerequisites.  This is only valid on Ubuntu systmes
 class { 'apt': }
+
+# Grab Cisco's build of Essex and specifically kvm and qemu packages to
+# address a network forwarding issue.
+apt::ppa { 'ppa:cisco-openstack-mirror/cisco-proposed': }
+apt::ppa { 'ppa:cisco-openstack-mirror/cisco': }
+
+Apt::Ppa['ppa:cisco-openstack-mirror/cisco-proposed'] -> Package<| title != 'python-software-properties' |>
+Apt::Ppa['ppa:cisco-openstack-mirror/cisco'] -> Package<| title != 'python-software-properties' |>
+
 ####### shared variables ##################
 
 
@@ -42,7 +51,7 @@ $auto_assign_floating_ip = false
 import 'cobbler-node'
 # expot an authhorized keys file to the root user of all nodes.
 # This is most useful for testing.
-import 'ssh-keys'
+# import 'ssh-keys'
 #### end shared variables #################
 
 
@@ -152,11 +161,7 @@ node /control01/ inherits base {
     rabbit_password         => $rabbit_password,
     rabbit_user             => $rabbit_user,
     export_resources        => true,
-  }<-
-  apt::ppa {"ppa:cisco-openstack-mirror/cisco-proposed":
-    release => 'precise',
   }
-
 
   class { 'openstack::auth_file':
     admin_password       => $admin_password,
@@ -201,11 +206,7 @@ node /compute0/ inherits base {
     verbose            => $verbose,
     manage_volumes     => true,
     nova_volume        => 'nova-volumes'
-  }<-
-  apt::ppa {"ppa:cisco-openstack-mirror/cisco-proposed":
-    release => 'precise',
   }
-
 
 }
 
