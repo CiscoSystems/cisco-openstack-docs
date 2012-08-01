@@ -49,7 +49,7 @@ Alternatively, you can follow the same basic steps as the script above:
 
 Note: The system will need to be restarted after applying the updates.
 
-Next, you will want to add the Cisco Mirror repository: 
+Next, add the Cisco Mirror repository: 
 
 	add-apt-repository -y ppa:cisco-openstack-mirror/cisco
 	apt-get update
