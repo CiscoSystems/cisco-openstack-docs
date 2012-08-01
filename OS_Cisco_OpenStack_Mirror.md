@@ -49,14 +49,12 @@ Alternatively, you can follow the same basic steps as the script above:
 
 Note: The system will need to be restarted after applying the updates.
 
-If you didn't install via the preseed file method, you'll need a couple additional packages:
-
-	apt-get install openssh-server lvm2 ntp puppet git rake ipmitool python-software-properties -y
-
-We'll also want to install the openstack packages from the Cisco-Openstack-Mirror environment, which includes the current validated set of puppet modules (installed into /usr/share/puppet/modules):
+Next, you will want to add the Cisco Mirror repository: 
 
 	add-apt-repository -y ppa:cisco-openstack-mirror/cisco
 	apt-get update
+
+Now that the Cisco Mirror repo has been added, install the Cisco Puppet Modules (installed into /usr/share/puppet/modules):
 	apt-get install puppet-openstack-cisco 
 
 Optionally, you can install the following packages.
