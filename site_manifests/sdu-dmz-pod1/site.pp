@@ -129,7 +129,7 @@ node compute_base inherits base {
 
 node /control01/ inherits base {
 
-#import "glance_import"
+import "glance_import"
 #import "tempest_add"
 # create DRBD logical volume.
   logical_volume { 'drbd-openstack':
@@ -336,6 +336,11 @@ node /build-os/ inherits "cobbler-node" {
     mode => '0755',
   }
 
+  exec {'echo "192.168.200.50 swiftproxy.cc.lab swiftproxy\n192.168.200.51 swiftproxy.cc.lab swiftproxy" >> /etc/hosts':
+    cwd => '/tmp',
+    path => ['/bin','/usr/bin'],
+    unless => 'grep "swiftproxy.cc.lab" /etc/hosts',
+  }
   file {'/etc/puppet/fileserver.conf':
     ensure => file,
     owner => 'root',
