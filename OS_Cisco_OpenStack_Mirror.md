@@ -43,6 +43,9 @@ or preface all the following commands with "sudo".
 
 This should get you to a state where puppet is ready to be configured (by editing the config scripts).
 
+SKIP THIS SECTION IF YOU RAN THE CURL COMMAND
+---------------------------------------------
+
 Alternatively, you can follow the same basic steps as the script above:
 
 	apt-get update && apt-get dist-upgrade -y
@@ -75,6 +78,9 @@ If your cisco-openstack-docs package does not include a sample site.pp and cobbl
 Then you need to set up your site:
 
 	cp ~/os-docs/examples/{site.pp,cobbler-node.pp} /etc/puppet/manifests/
+
+CONTINUE HERE IF YOU RAN THE CURL COMMAND
+-----------------------------------------
 
 YOU MUST THEN EDIT THESE FILES.  They are fairly well documented, but please comment with questions. You can also read through these descriptions: [Cobbler Node](https://github.com/CiscoSystems/cisco-openstack-docs/blob/master/Cobbler-Node.md)  and [Site](https://github.com/CiscoSystems/cisco-openstack-docs/blob/master/Site.md)
 
