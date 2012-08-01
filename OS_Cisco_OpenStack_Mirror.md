@@ -55,6 +55,7 @@ Next, add the Cisco Mirror repository:
 	apt-get update
 
 Now that the Cisco Mirror repo has been added, install the Cisco Puppet Modules (installed into /usr/share/puppet/modules):
+
 	apt-get install puppet-openstack-cisco 
 
 Optionally, you can install the following packages.
