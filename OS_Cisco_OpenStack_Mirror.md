@@ -92,7 +92,13 @@ I recommend a reboot at this point, as it seems that the puppetmaster doesn't re
 
 And now you should be able to load up your cobbled nodes:
 
-	~/os-docs/examples/clean_node.sh {node_name}
+	~/os-docs/examples/clean_node.sh {node_name} example.com
+
+or if you want to do it for _all_ of the nodes defined in your cobbler-node.pp file:
+
+	for n in `cobbler system list`; do ~/os-docs/examples/clean_node.sh $n example.com ; done
+
+_note: replace example.com with your nodes proper domain name._
 
 Testing OpenStack
 -----------------
