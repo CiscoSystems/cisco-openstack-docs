@@ -85,6 +85,12 @@ if ! run_cmd add-apt-repository -y ppa:cisco-openstack-mirror/cisco ; then
   exit 1
 fi
 
+echo "Adding Cisco's OpenStack Proposed code and puppet manifest repository..."
+if ! run_cmd add-apt-repository -y ppa:cisco-openstack-mirror/cisco-proposed ; then
+  echo "couldn't install the repository"
+  exit 1
+fi
+
 echo -e "\n\nUpdated apt repository...\n\n"
 if ! run_cmd apt-get $APT_CONFIG update; then
   echo "Can't update apt repository"
