@@ -1,4 +1,4 @@
-# = Cobbler and Puppet for nodes
+
 #
 # == Example
 #
@@ -31,7 +31,7 @@ node /cobbler-node/ {
   dhcp_service => 'dnsmasq',
   dhcp_ip_low => '192.168.200.240',
   dhcp_ip_high => '192.168.200.250',
-  domain_name => 'cc.lab',
+  domain_name => 'dmz-pod1.lab',
   proxy => "http://${cobbler_node_ip}:3142/",
   password_crypted => '$6$UfgWxrIv$k4KfzAEMqMg.fppmSOTd0usI4j6gfjs0962.JXsoJRWa5wMz8yQk4SfInn4.WZ3L/MCt5u.62tHDGB36EhiKF1',
  }
@@ -46,7 +46,7 @@ node /cobbler-node/ {
   ntp_server => "192.168.200.1",
   late_command => '
 sed -e "/logdir/ a pluginsync=true" -i /target/etc/puppet/puppet.conf ; \
-sed -e "/logdir/ a server=build-os.cc.lab" -i /target/etc/puppet/puppet.conf ; \
+sed -e "/logdir/ a server=build-os.dmz-pod1.lab" -i /target/etc/puppet/puppet.conf ; \
 sed -e "s/START=no/START=yes/" -i /target/etc/default/puppet ; \
 echo -e "server 192.168.200.1 iburst" > /target/etc/ntp.conf ; \
 echo "8021q" >> /target/etc/modules ; \
@@ -67,7 +67,7 @@ cobbler::node { "control01":
  mac => "A4:4C:11:13:22:E2",
  profile => "precise-x86_64-auto",
  ip => "192.168.200.41",
- domain => "cc.lab",
+ domain => "dmz-pod1.lab",
  preseed => "/etc/cobbler/preseeds/cisco-preseed",
  power_address => "192.168.200.2",
  power_type => "ipmitool",
@@ -79,7 +79,7 @@ cobbler::node { "control02":
  mac => "A4:4C:11:13:5E:5C",
  profile => "precise-x86_64-auto",
  ip => "192.168.200.42",
- domain => "cc.lab",
+ domain => "dmz-pod1.lab",
  preseed => "/etc/cobbler/preseeds/cisco-preseed",
  power_address => "192.168.200.3",
  power_type => "ipmitool",
@@ -92,7 +92,7 @@ cobbler::node { "control02":
 # mac => "A4:4C:11:13:98:21",
 # profile => "precise-x86_64-auto",
 # ip => "192.168.200.254",
-# domain => "cc.lab",
+# domain => "dmz-pod1.lab",
 # preseed => "/etc/cobbler/preseeds/cisco-preseed",
 # power_address => "192.168.200.4",
 # power_type => "ipmitool",
@@ -103,8 +103,8 @@ cobbler::node { "control02":
 cobbler::node { "compute01":
  mac => "A4:4C:11:13:64:4A",
  profile => "precise-x86_64-auto",
- ip => "192.168.200.20",
- domain => "cc.lab",
+ ip => "192.168.200.51",
+ domain => "dmz-pod1.lab",
  preseed => "/etc/cobbler/preseeds/cisco-preseed",
  power_address => "192.168.200.5",
  power_type => "ipmitool",
@@ -115,8 +115,8 @@ cobbler::node { "compute01":
 cobbler::node { "compute02":
  mac => "E8:B7:48:4D:CB:17",
  profile => "precise-x86_64-auto",
- ip => "192.168.200.21",
- domain => "cc.lab",
+ ip => "192.168.200.52",
+ domain => "dmz-pod1.lab",
  preseed => "/etc/cobbler/preseeds/cisco-preseed",
  power_address => "192.168.200.6",
  power_type => "ipmitool",
@@ -127,8 +127,8 @@ cobbler::node { "compute02":
 cobbler::node { "compute03":
  mac => "A4:4C:11:13:57:71",
  profile => "precise-x86_64-auto",
- ip => "192.168.200.22",
- domain => "cc.lab",
+ ip => "192.168.200.53",
+ domain => "dmz-pod1.lab",
  preseed => "/etc/cobbler/preseeds/cisco-preseed",
  power_address => "192.168.200.7",
  power_type => "ipmitool",
@@ -139,8 +139,8 @@ cobbler::node { "compute03":
 cobbler::node { "swiftproxy01":
  mac => "A4:4C:11:13:9C:E4",
  profile => "precise-x86_64-auto",
- ip => "192.168.200.50",
- domain => "cc.lab",
+ ip => "192.168.200.61",
+ domain => "dmz-pod1.lab",
  preseed => "/etc/cobbler/preseeds/cisco-preseed",
  power_address => "192.168.200.8",
  power_type => "ipmitool",
@@ -150,8 +150,8 @@ cobbler::node { "swiftproxy01":
 cobbler::node { "swiftproxy02":
  mac => "A4:4C:11:13:93:FF",
  profile => "precise-x86_64-auto",
- ip => "192.168.200.51",
- domain => "cc.lab",
+ ip => "192.168.200.62",
+ domain => "dmz-pod1.lab",
  preseed => "/etc/cobbler/preseeds/cisco-preseed",
  power_address => "192.168.200.9",
  power_type => "ipmitool",
@@ -161,8 +161,8 @@ cobbler::node { "swiftproxy02":
 cobbler::node { "swift01":
  mac => "A4:4C:11:13:C1:8C",
  profile => "precise-x86_64-auto",
- ip => "192.168.200.30",
- domain => "cc.lab",
+ ip => "192.168.200.71",
+ domain => "dmz-pod1.lab",
  preseed => "/etc/cobbler/preseeds/cisco-preseed",
  power_address => "192.168.200.10",
  power_type => "ipmitool",
@@ -172,8 +172,8 @@ cobbler::node { "swift01":
 cobbler::node { "swift02":
  mac => "A4:4C:11:13:C7:35",
  profile => "precise-x86_64-auto",
- ip => "192.168.200.31",
- domain => "cc.lab",
+ ip => "192.168.200.72",
+ domain => "dmz-pod1.lab",
  preseed => "/etc/cobbler/preseeds/cisco-preseed",
  power_address => "192.168.200.11",
  power_type => "ipmitool",
@@ -183,8 +183,8 @@ cobbler::node { "swift02":
 cobbler::node { "swift03":
  mac => "A4:4C:11:13:AC:86",
  profile => "precise-x86_64-auto",
- ip => "192.168.200.32",
- domain => "cc.lab",
+ ip => "192.168.200.73",
+ domain => "dmz-pod1.lab",
  preseed => "/etc/cobbler/preseeds/cisco-preseed",
  power_address => "192.168.200.12",
  power_type => "ipmitool",

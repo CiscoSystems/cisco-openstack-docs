@@ -59,7 +59,7 @@ $verbose                 = 'false'
 # by default it does not enable atomatically adding floating IPs
 $auto_assign_floating_ip = true
 # Swift addresses:
-$swift_proxy_address    = '192.168.200.50'
+$swift_proxy_address    = 'swiftproxy'
 #### end shared variables #################
 
 # multi-node specific parameters
@@ -135,7 +135,7 @@ import "glance_import"
   logical_volume { 'drbd-openstack':
     ensure       => present,
     volume_group => 'nova-volumes',
-    size         => '1G',
+    size         => '152M',
   }
 
   class { 'openstack::controller':
@@ -208,7 +208,7 @@ node /control02/ inherits base {
   logical_volume { 'drbd-openstack':
     ensure       => present,
     volume_group => 'nova-volumes',
-    size         => '1G',
+    size         => '152M',
   }
 
   class { 'openstack::controller':
@@ -326,7 +326,7 @@ node /build-os/ inherits "cobbler-node" {
   class { puppet:
     run_master => true,
     puppetmaster_address => $::fqdn,
-    certname => 'build-os.cc.lab',
+    certname => 'build-os.dmz-pod1.lab',
     mysql_password => 'ubuntu',
   }<-
   file {'/etc/puppet/files':
@@ -336,10 +336,10 @@ node /build-os/ inherits "cobbler-node" {
     mode => '0755',
   }
 
-  exec {'echo "192.168.200.50 swiftproxy.cc.lab swiftproxy\n192.168.200.51 swiftproxy.cc.lab swiftproxy" >> /etc/hosts':
+  exec {'echo "192.168.200.61 swiftproxy.dmz-lab1.lab swiftproxy\n192.168.200.62 swiftproxy.dmz-lab1.lab swiftproxy" >> /etc/hosts':
     cwd => '/tmp',
     path => ['/bin','/usr/bin'],
-    unless => 'grep "swiftproxy.cc.lab" /etc/hosts',
+    unless => 'grep "swiftproxy.dmz-lab1.lab" /etc/hosts',
   }
   file {'/etc/puppet/fileserver.conf':
     ensure => file,

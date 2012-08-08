@@ -1,5 +1,5 @@
 $release = 'precise'
-$image_name = "${release}-server-cloudimg-amd64-disk1.img"
+$image_name = "${release}.img"
 $image_uri = "http://build-os/${image_name}"
 $os_tenant = 'openstack'
 $os_username = 'admin'
