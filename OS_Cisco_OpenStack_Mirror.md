@@ -54,6 +54,7 @@ Note: The system will need to be restarted after applying the updates.
 
 Next, add the Cisco Mirror repository: 
 
+	apt-get install -y python-software-properties
 	add-apt-repository -y ppa:cisco-openstack-mirror/cisco
 	apt-get update
 
