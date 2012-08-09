@@ -72,6 +72,10 @@ Utilities:
 
 	apt-get install cisco-openstack-utils
 
+You will need a couple additional packages:
+
+apt-get install ntp puppet git ipmitool -y
+
 If your cisco-openstack-docs package does not include a sample site.pp and cobbler-node.pp, then pull cisco-openstack-docs directly from the Github repository:
 
 	git clone https://github.com/CiscoSystems/cisco-openstack-docs ~/os-docs
