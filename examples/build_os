@@ -74,7 +74,7 @@ if [ ! -d /root/os-docs ] ; then
 fi
 
 echo "Copying manifests examples to manifest dir..."
-if ! run_cmd cp ~/os-docs/examples/{site.pp,cobbler-node.pp} /etc/puppet/manifests/ ;then
+if ! run_cmd cp ~/os-docs/examples/{site.pp,cobbler-node.pp,swift-nodes.pp} /etc/puppet/manifests/ ;then
   echo "Can't copy sample manifests!!!"
   exit 1
 fi
