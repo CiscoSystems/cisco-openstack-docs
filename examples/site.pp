@@ -52,6 +52,10 @@ import 'cobbler-node'
 # expot an authhorized keys file to the root user of all nodes.
 # This is most useful for testing.
 # import 'ssh-keys'
+
+# MySQL Information
+$mysql_root_password    = 'ubuntu'
+$mysql_puppet_password  = 'ubuntu'
 #### end shared variables #################
 
 
@@ -71,9 +75,8 @@ node /os-build/ inherits "cobbler-node" {
 # set the right local puppet environment up.  This builds puppetmaster with storedconfigs (a nd a local mysql instance)
   class { puppet:
     run_master => true,
-    puppetmaster_address => $::fqdn,
-    mysql_root_password => 'ubuntu',
-    mysql_password => 'ubuntu',	
+    mysql_root_password => $mysql_root_password,
+    mysql_password => $mysql_puppet_password,	
   }
 
   file {'/etc/puppet/files':
