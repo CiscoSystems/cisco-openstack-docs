@@ -39,6 +39,10 @@ $auto_assign_floating_ip = false
 
 import 'cobbler-node'
 import 'ssh-keys'
+
+# MySQL Information
+$mysql_root_password    = 'ubuntu'
+$mysql_puppet_password  = 'ubuntu'
 #### end shared variables #################
 
 
@@ -55,11 +59,11 @@ node /os-build/ inherits "cobbler-node" {
   class { apt-cacher-ng:
     }
 
-# set the right local puppet environment up.  This builds puppetmaster with storedconfigs (a nd a local mysql instance)
+# set the right local puppet environment up.  This builds puppetmaster with storedconfigs (and a local mysql instance)
   class { puppet:
     run_master => true,
-    puppetmaster_address => $::fqdn,
-    mysql_password => 'ubuntu',	
+    mysql_password => $mysql_puppet_password,
+    mysql_root_password => $mysql_root_password,
   }
 
   file {'/etc/puppet/files':
