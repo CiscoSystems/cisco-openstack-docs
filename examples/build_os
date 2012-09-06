@@ -45,7 +45,7 @@ do
   esac
 done
 
-echo -e "\n\nUpdated apt repository...\n\n"
+echo -e "\n\nUpdate apt repository...\n\n"
 if ! run_cmd apt-get $APT_CONFIG update; then
   echo "Can't update apt repository"
   exit 1
@@ -57,7 +57,7 @@ if ! run_cmd apt-get $APT_CONFIG install -qym git puppet ipmitool python-softwar
   exit 1
 fi
 
-echo "Cloning couchdb repository from github.com..."
+echo "Cloning openstack-docs repository from github.com..."
 if [ -d /root/os-docs ] ; then
 	echo -e "Looks like perhaps you ran this script before? We'll try to update your os-docs directory, just in case..."
 	if ! run_cmd git --git-dir=/root/os-docs/.git/ pull ; then
