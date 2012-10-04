@@ -68,6 +68,18 @@ node /os-build/ inherits "cobbler-node" {
     autoupdate => true,
   }
 
+# Including the monitoring software: Nagios, Collectd and Graphite
+class { 'collectd':
+    graphitehost => $::fqdn,
+  }
+
+  class { 'nagios':
+  }
+
+ class { 'graphite':
+   graphitehost => $::fqdn,
+  }
+
 # set up a local apt cache.  Eventually this may become a local mirror/repo instead
   class { apt-cacher-ng:
     }
